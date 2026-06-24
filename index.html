@@ -1,9 +1,32 @@
-<script type="module">
-import { db } from "./firebase.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contratos</title>
+</head>
+<body>
 
+<h2>📊 Lista de Contratos</h2>
+
+<ul id="lista"></ul>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// configuração Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAdNNEoLtJUHayFl7Idb7jGeTM5wJTnUGI",
+  authDomain: "contratos-sgi.firebaseapp.com",
+  projectId: "contratos-sgi"
+};
+
+// inicia Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// função
 async function carregarContratos() {
-  console.log("✅ buscando contratos...");
+  console.log("✅ buscando dados...");
 
   const lista = document.getElementById("lista");
 
@@ -15,13 +38,17 @@ async function carregarContratos() {
     const li = document.createElement("li");
 
     li.textContent =
-      "Contrato: " + (dados.numero_contrato || "-") +
-      " | Empresa: " + (dados.empresa || "-") +
-      " | Vencimento: " + (dados.data_fim_vigencia || "-");
+      "Contrato: " + dados.numero_contrato +
+      " | Empresa: " + dados.empresa +
+      " | Vencimento: " + dados.data_fim_vigencia;
 
     lista.appendChild(li);
   });
 }
 
+// executa
 carregarContratos();
 </script>
+
+</body>
+</html>
