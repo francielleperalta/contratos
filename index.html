@@ -9,7 +9,24 @@
 
 <ul id="lista"></ul>
 
-<script type="module">
+<script type="module"> async function carregarContratos() {
+  const lista = document.getElementById("lista");
+
+  const snapshot = await getDocs(collection(db, "contratos"));
+
+  snapshot.forEach((doc) => {
+    const dados = doc.data();
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Contrato: " + (dados.numero_contrato || "-") +
+      " | Empresa: " + (dados.empresa || "-") +
+      " | Vencimento: " + (dados.data_fim_vigencia || "-");
+
+    lista.appendChild(li);
+  });
+}
 import { db } from "./firebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
