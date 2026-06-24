@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contratos</title>
+</head>
+<body>
+
+<h2>📊 Lista de Contratos</h2>
+
+<ul id="lista"></ul>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
