@@ -1,53 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Contratos</title>
-</head>
 <body>
 
 <h2>📊 Lista de Contratos</h2>
 
 <ul id="lista"></ul>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
 
-// configuração Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAdNNEoLtJUHayFl7Idb7jGeTM5wJTnUGI",
-  authDomain: "contratos-sgi.firebaseapp.com",
-  projectId: "contratos-sgi"
-};
+// simulando seu banco (igual ao Firebase)
+const contratos = [
+  {
+    numero_contrato: "001",
+    empresa: "Empresa Teste",
+    data_fim_vigencia: "2026-12-31"
+  }
+];
 
-// inicia Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// mostra na tela
+const lista = document.getElementById("lista");
 
-// função
-async function carregarContratos() {
-  console.log("✅ buscando dados...");
+contratos.forEach(c => {
+  const li = document.createElement("li");
 
-  const lista = document.getElementById("lista");
+  li.textContent =
+    "Contrato: " + c.numero_contrato +
+    " | Empresa: " + c.empresa +
+    " | Vencimento: " + c.data_fim_vigencia;
 
-  const snapshot = await getDocs(collection(db, "contratos"));
+  lista.appendChild(li);
+});
 
-  snapshot.forEach((doc) => {
-    const dados = doc.data();
-
-    const li = document.createElement("li");
-
-    li.textContent =
-      "Contrato: " + dados.numero_contrato +
-      " | Empresa: " + dados.empresa +
-      " | Vencimento: " + dados.data_fim_vigencia;
-
-    lista.appendChild(li);
-  });
-}
-
-// executa
-carregarContratos();
 </script>
 
 </body>
