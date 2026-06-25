@@ -1,390 +1,808 @@
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  writeBatch
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Contratos</title>
 
-/* =========================
-   CONFIGURAÇÃO FIREBASE
-   TROQUE PELOS DADOS DO SEU PROJETO
-========================= */
-const firebaseConfig = {
-  apiKey: "COLE_AQUI",
-  authDomain: "COLE_AQUI",
-  projectId: "COLE_AQUI",
-  storageBucket: "COLE_AQUI",
-  messagingSenderId: "COLE_AQUI",
-  appId: "COLE_AQUI"
-};
+  <style>
+    * { box-sizing: border-box; }
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* =========================
-   ESTADO
-========================= */
-let contratos = [];
-let contratoEmEdicao = null;
-
-const el = {
-  tbody: document.getElementById("tbodyContratos"),
-  tRow: document.getElementById("rowTemplate"),
-  busca: document.getElementById("fBusca"),
-  unid: document.getElementById("fUnidade"),
-  status: document.getElementById("fStatus"),
-  btnLimpar: document.getElementById("btnLimpar"),
-  btnNovo: document.getElementById("btnNovo"),
-  btnExportar: document.getElementById("btnExportar"),
-  inputImportar: document.getElementById("inputImportar"),
-  modal: document.getElementById("modalContrato"),
-  form: document.getElementById("formContrato"),
-  tituloModal: document.getElementById("tituloModal"),
-  btnFechar: document.getElementById("btnFechar"),
-  btnCancelar: document.getElementById("btnCancelar"),
-  btnExcluir: document.getElementById("btnExcluir"),
-  kpiTotal: document.getElementById("kpiTotal"),
-  kpiUrgente: document.getElementById("kpiUrgente"),
-  kpiVencido: document.getElementById("kpiVencido"),
-  kpiValor: document.getElementById("kpiValor")
-};
-
-const money = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL"
-});
-
-function hojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function calcularStatus(data) {
-  if (!data) return "Sem data";
-
-  const hoje = new Date(hojeISO() + "T00:00:00");
-  const fim = new Date(data + "T00:00:00");
-
-  const diff = Math.ceil((fim - hoje) / 86400000);
-
-  if (Number.isNaN(diff)) return "Sem data";
-  if (diff < 0) return "Vencido";
-  if (diff <= 15) return "Urgente";
-  if (diff <= 30) return "Atenção";
-  return "Normal";
-}
-
-/* =========================
-   FIREBASE - CARREGAR
-========================= */
-async function carregarBaseInicial() {
-  const snapshot = await getDocs(collection(db, "contratos"));
-  contratos = [];
-
-  snapshot.forEach((item) => {
-    contratos.push({
-      docId: item.id,
-      ...item.data()
-    });
-  });
-}
-
-/* =========================
-   FILTROS / RENDER
-========================= */
-function preencherFiltroUnidade() {
-  const unidades = [...new Set(contratos.map(c => c.unidade).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
-
-  const atual = el.unid.value;
-  el.unid.innerHTML = `<option value="">Todas as unidades</option>`;
-
-  unidades.forEach((u) => {
-    const op = document.createElement("option");
-    op.value = u;
-    op.textContent = u;
-    el.unid.appendChild(op);
-  });
-
-  el.unid.value = atual;
-}
-
-function filtrarDados() {
-  const q = el.busca.value.trim().toLowerCase();
-  const un = el.unid.value;
-  const st = el.status.value;
-
-  return contratos.filter((c) => {
-    const status = calcularStatus(c.dataFimVigencia);
-    const txt = [
-      c.id,
-      c.numeroContrato,
-      c.empresa,
-      c.processoSei,
-      c.objeto
-    ].join(" ").toLowerCase();
-
-    return (!q || txt.includes(q)) &&
-           (!un || c.unidade === un) &&
-           (!st || status === st);
-  });
-}
-
-function atualizarKPIs(lista) {
-  const urg = lista.filter(c => {
-    const s = calcularStatus(c.dataFimVigencia);
-    return s === "Urgente" || s === "Atenção";
-  }).length;
-
-  const venc = lista.filter(c => calcularStatus(c.dataFimVigencia) === "Vencido").length;
-
-  const totalValor = lista.reduce((s, c) => s + (Number(c.valorTotal) || 0), 0);
-
-  el.kpiTotal.textContent = String(lista.length);
-  el.kpiUrgente.textContent = String(urg);
-  el.kpiVencido.textContent = String(venc);
-  el.kpiValor.textContent = money.format(totalValor);
-}
-
-function render() {
-  const lista = filtrarDados();
-  el.tbody.innerHTML = "";
-  atualizarKPIs(lista);
-
-  lista.forEach((c) => {
-    const row = el.tRow.content.firstElementChild.cloneNode(true);
-
-    row.querySelector('[data-k="id"]').textContent = c.id || "";
-    row.querySelector('[data-k="numeroContrato"]').textContent = c.numeroContrato || "-";
-    row.querySelector('[data-k="empresa"]').textContent = c.empresa || "-";
-    row.querySelector('[data-k="unidade"]').textContent = c.unidade || "-";
-    row.querySelector('[data-k="dataFimVigencia"]').textContent = c.dataFimVigencia || "-";
-
-    const status = calcularStatus(c.dataFimVigencia);
-    const tdStatus = row.querySelector('[data-k="status"]');
-    tdStatus.textContent = status;
-    tdStatus.className =
-      "status " +
-      status.toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, "-");
-
-    row.querySelector('[data-k="valorTotal"]').textContent =
-      c.valorTotal ? money.format(Number(c.valorTotal)) : "-";
-
-    row.querySelector('[data-k="faseAtual"]').textContent = c.faseAtual || "-";
-
-    row.querySelector('[data-action="edit"]').addEventListener("click", () => {
-      abrirModal(c.id);
-    });
-
-    el.tbody.appendChild(row);
-  });
-}
-
-/* =========================
-   MODAL
-========================= */
-function gerarNovoId() {
-  const nums = contratos
-    .map(c => Number(String(c.id || "").replace(/\D/g, "")))
-    .filter(Boolean);
-
-  const next = (Math.max(0, ...nums) + 1).toString().padStart(4, "0");
-  return `CTR-${next}`;
-}
-
-function abrirModal(id = null) {
-  contratoEmEdicao = id;
-  el.form.reset();
-
-  const isEdit = !!id;
-  el.tituloModal.textContent = isEdit ? "Editar contrato" : "Novo contrato";
-  el.btnExcluir.classList.toggle("hidden", !isEdit);
-
-  const base = isEdit
-    ? contratos.find(c => c.id === id)
-    : {
-        id: gerarNovoId(),
-        origemAba: "Cadastro manual"
-      };
-
-  Object.entries(base).forEach(([k, v]) => {
-    if (el.form.elements[k]) {
-      el.form.elements[k].value = v ?? "";
-    }
-  });
-
-  el.modal.showModal();
-}
-
-function fecharModal() {
-  el.modal.close();
-  contratoEmEdicao = null;
-}
-
-/* =========================
-   FIREBASE - SALVAR
-========================= */
-async function salvarContrato(ev) {
-  ev.preventDefault();
-
-  const fd = new FormData(el.form);
-  const data = Object.fromEntries(fd.entries());
-
-  data.valorTotal = data.valorTotal ? Number(data.valorTotal) : null;
-
-  if (contratoEmEdicao) {
-    const atual = contratos.find(c => c.id === contratoEmEdicao);
-
-    await updateDoc(doc(db, "contratos", atual.docId), {
-      id: data.id || "",
-      numeroContrato: data.numeroContrato || "",
-      processoSei: data.processoSei || "",
-      empresa: data.empresa || "",
-      unidade: data.unidade || "",
-      modalidade: data.modalidade || "",
-      gestor: data.gestor || "",
-      fiscal: data.fiscal || "",
-      valorTotal: data.valorTotal || null,
-      dataFimVigencia: data.dataFimVigencia || "",
-      faseAtual: data.faseAtual || "",
-      proximaFase: data.proximaFase || "",
-      origemAba: data.origemAba || "",
-      objeto: data.objeto || "",
-      observacoes: data.observacoes || ""
-    });
-  } else {
-    await addDoc(collection(db, "contratos"), {
-      id: data.id || "",
-      numeroContrato: data.numeroContrato || "",
-      processoSei: data.processoSei || "",
-      empresa: data.empresa || "",
-      unidade: data.unidade || "",
-      modalidade: data.modalidade || "",
-      gestor: data.gestor || "",
-      fiscal: data.fiscal || "",
-      valorTotal: data.valorTotal || null,
-      dataFimVigencia: data.dataFimVigencia || "",
-      faseAtual: data.faseAtual || "",
-      proximaFase: data.proximaFase || "",
-      origemAba: data.origemAba || "",
-      objeto: data.objeto || "",
-      observacoes: data.observacoes || ""
-    });
-  }
-
-  await carregarBaseInicial();
-  preencherFiltroUnidade();
-  render();
-  fecharModal();
-}
-
-/* =========================
-   FIREBASE - EXCLUIR
-========================= */
-async function excluirContrato() {
-  if (!contratoEmEdicao) return;
-
-  const ok = confirm("Deseja excluir este contrato?");
-  if (!ok) return;
-
-  const atual = contratos.find(c => c.id === contratoEmEdicao);
-  await deleteDoc(doc(db, "contratos", atual.docId));
-
-  await carregarBaseInicial();
-  preencherFiltroUnidade();
-  render();
-  fecharModal();
-}
-
-/* =========================
-   EXPORTAR / IMPORTAR JSON
-========================= */
-function exportarJson() {
-  const blob = new Blob([JSON.stringify(contratos, null, 2)], {
-    type: "application/json"
-  });
-
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "contratos-editados.json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-async function importarJson(file) {
-  const texto = await file.text();
-
-  try {
-    const dados = JSON.parse(texto);
-
-    if (!Array.isArray(dados)) {
-      alert("JSON inválido.");
-      return;
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background: #f3f6fb;
+      color: #1f2937;
     }
 
-    const batch = writeBatch(db);
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 32px;
+      background: #fff;
+      border-bottom: 1px solid #dbe3f0;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
 
-    dados.forEach((item) => {
-      const ref = doc(collection(db, "contratos"));
-      batch.set(ref, item);
+    h1 {
+      margin: 0;
+      color: #1f4aa8;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: #6b7280;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, .btn-file {
+      background: #fff;
+      border: 1px solid #b8c4dd;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover, .btn-file:hover {
+      background: #f7f9fc;
+    }
+
+    button.primary {
+      background: #1f4aa8;
+      color: #fff;
+      border-color: #1f4aa8;
+    }
+
+    button.primary:hover {
+      filter: brightness(0.95);
+    }
+
+    button.danger {
+      background: #b42318;
+      color: #fff;
+      border-color: #b42318;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 20px 32px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dbe3f0;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(16,24,40,.04);
+    }
+
+    .card span {
+      display: block;
+      color: #667085;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .card strong {
+      font-size: 28px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 12px;
+      padding: 0 32px 20px;
+    }
+
+    .filters input,
+    .filters select,
+    .grid input,
+    .grid textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #c9d3e7;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      padding: 0 32px 32px;
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #dbe3f0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(16,24,40,.04);
+    }
+
+    thead {
+      background: #1f4aa8;
+      color: #fff;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5eaf4;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    tbody tr:hover {
+      background: #f8fbff;
+    }
+
+    .status {
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      display: inline-block;
+      font-size: 12px;
+    }
+
+    .status.normal {
+      background: #ecfdf3;
+      color: #027a48;
+    }
+
+    .status.atencao {
+      background: #fffaeb;
+      color: #b54708;
+    }
+
+    .status.urgente {
+      background: #fff1f3;
+      color: #c01048;
+    }
+
+    .status.vencido {
+      background: #fef3f2;
+      color: #b42318;
+    }
+
+    .status.sem-data {
+      background: #eff4ff;
+      color: #175cd3;
+    }
+
+    .empty-state {
+      padding: 20px;
+      text-align: center;
+      color: #667085;
+      background: #fff;
+      border: 1px solid #dbe3f0;
+      border-radius: 14px;
+      margin: 0 32px 32px;
+    }
+
+    dialog {
+      border: none;
+      border-radius: 18px;
+      padding: 0;
+      max-width: 960px;
+      width: calc(100% - 32px);
+      box-shadow: 0 24px 48px rgba(16,24,40,.20);
+    }
+
+    form {
+      padding: 0;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5eaf4;
+      background: #f8fafc;
+    }
+
+    .icon {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 20px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14px;
+      color: #344054;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 18px 20px;
+      border-top: 1px solid #e5eaf4;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>📊 Sistema de Contratos</h1>
+      <p class="subtitle">Versão online com Firebase</p>
+    </div>
+
+    <div class="actions">
+      <button id="btnExportar">Exportar JSON</button>
+      <label class="btn-file">
+        Importar JSON
+        <input type="file" id="inputImportar" accept="application/json" hidden />
+      </label>
+      <button id="btnNovo" class="primary">+ Novo contrato</button>
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="card">
+      <span>Total</span>
+      <strong id="kpiTotal">0</strong>
+    </div>
+    <div class="card">
+      <span>Urgentes</span>
+      <strong id="kpiUrgente">0</strong>
+    </div>
+    <div class="card">
+      <span>Vencidos</span>
+      <strong id="kpiVencido">0</strong>
+    </div>
+    <div class="card">
+      <span>Valor total</span>
+      <strong id="kpiValor">R$ 0,00</strong>
+    </div>
+  </section>
+
+  <section class="filters">
+    <input type="text" id="fBusca" placeholder="Buscar por contrato, empresa, processo ou objeto" />
+    <select id="fUnidade">
+      <option value="">Todas as unidades</option>
+    </select>
+    <select id="fStatus">
+      <option value="">Todos os status</option>
+      <option value="Normal">Normal</option>
+      <option value="Atenção">Atenção</option>
+      <option value="Urgente">Urgente</option>
+      <option value="Vencido">Vencido</option>
+      <option value="Sem data">Sem data</option>
+    </select>
+    <button id="btnLimpar">Limpar filtros</button>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Contrato</th>
+          <th>Empresa</th>
+          <th>Unidade</th>
+          <th>Vigência</th>
+          <th>Status</th>
+          <th>Valor</th>
+          <th>Fase atual</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyContratos"></tbody>
+    </table>
+  </section>
+
+  <div id="emptyState" class="empty-state hidden">
+    Nenhum contrato encontrado. Clique em <strong>+ Novo contrato</strong> para cadastrar.
+  </div>
+
+  <dialog id="modalContrato">
+    <form method="dialog" id="formContrato">
+      <div class="modal-header">
+        <h2 id="tituloModal">Novo contrato</h2>
+        <button type="button" id="btnFechar" class="icon">✕</button>
+      </div>
+
+      <div class="grid">
+        <label>ID
+          <input name="id" required />
+        </label>
+
+        <label>Número do contrato
+          <input name="numeroContrato" />
+        </label>
+
+        <label>Processo SEI
+          <input name="processoSei" />
+        </label>
+
+        <label>Empresa
+          <input name="empresa" />
+        </label>
+
+        <label>Unidade
+          <input name="unidade" />
+        </label>
+
+        <label>Modalidade
+          <input name="modalidade" />
+        </label>
+
+        <label>Gestor
+          <input name="gestor" />
+        </label>
+
+        <label>Fiscal
+          <input name="fiscal" />
+        </label>
+
+        <label>Valor total
+          <input name="valorTotal" type="number" step="0.01" />
+        </label>
+
+        <label>Data fim vigência
+          <input name="dataFimVigencia" type="date" />
+        </label>
+
+        <label>Fase atual
+          <input name="faseAtual" />
+        </label>
+
+        <label>Próxima fase
+          <input name="proximaFase" />
+        </label>
+
+        <label class="full">Origem / aba
+          <input name="origemAba" />
+        </label>
+
+        <label class="full">Objeto
+          <textarea name="objeto" rows="3"></textarea>
+        </label>
+
+        <label class="full">Observações
+          <textarea name="observacoes" rows="4"></textarea>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="btnExcluir" class="danger hidden">Excluir</button>
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" class="primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="rowTemplate">
+    <tr>
+      <td data-k="id"></td>
+      <td data-k="numeroContrato"></td>
+      <td data-k="empresa"></td>
+      <td data-k="unidade"></td>
+      <td data-k="dataFimVigencia"></td>
+      <td data-k="status"></td>
+      <td data-k="valorTotal"></td>
+      <td data-k="faseAtual"></td>
+      <td>
+        <button data-action="edit">Editar</button>
+      </td>
+    </tr>
+  </template>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      doc,
+      writeBatch
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCO7-wVFCSteOCTE14nyOe6QNKowmHHccg",
+      authDomain: "monitorarcontratos.firebaseapp.com",
+      databaseURL: "https://monitorarcontratos-default-rtdb.firebaseio.com",
+      projectId: "monitorarcontratos",
+      storageBucket: "monitorarcontratos.firebasestorage.app",
+      messagingSenderId: "90293585971",
+      appId: "1:90293585971:web:a9acb799dcfc7892d3bb46",
+      measurementId: "G-TXW77PVKZV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let contratos = [];
+    let contratoEmEdicao = null;
+
+    const el = {
+      tbody: document.getElementById("tbodyContratos"),
+      tRow: document.getElementById("rowTemplate"),
+      busca: document.getElementById("fBusca"),
+      unid: document.getElementById("fUnidade"),
+      status: document.getElementById("fStatus"),
+      btnLimpar: document.getElementById("btnLimpar"),
+      btnNovo: document.getElementById("btnNovo"),
+      btnExportar: document.getElementById("btnExportar"),
+      inputImportar: document.getElementById("inputImportar"),
+      modal: document.getElementById("modalContrato"),
+      form: document.getElementById("formContrato"),
+      tituloModal: document.getElementById("tituloModal"),
+      btnFechar: document.getElementById("btnFechar"),
+      btnCancelar: document.getElementById("btnCancelar"),
+      btnExcluir: document.getElementById("btnExcluir"),
+      kpiTotal: document.getElementById("kpiTotal"),
+      kpiUrgente: document.getElementById("kpiUrgente"),
+      kpiVencido: document.getElementById("kpiVencido"),
+      kpiValor: document.getElementById("kpiValor"),
+      emptyState: document.getElementById("emptyState")
+    };
+
+    const money = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
     });
 
-    await batch.commit();
+    function hojeISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
 
-    alert("Importação concluída com sucesso.");
+    function calcularStatus(data) {
+      if (!data) return "Sem data";
+
+      const hoje = new Date(hojeISO() + "T00:00:00");
+      const fim = new Date(data + "T00:00:00");
+      const diff = Math.ceil((fim - hoje) / 86400000);
+
+      if (Number.isNaN(diff)) return "Sem data";
+      if (diff < 0) return "Vencido";
+      if (diff <= 15) return "Urgente";
+      if (diff <= 30) return "Atenção";
+      return "Normal";
+    }
+
+    async function carregarBaseInicial() {
+      const snapshot = await getDocs(collection(db, "contratos"));
+      contratos = [];
+
+      snapshot.forEach((item) => {
+        contratos.push({
+          docId: item.id,
+          ...item.data()
+        });
+      });
+    }
+
+    function preencherFiltroUnidade() {
+      const unidades = [...new Set(contratos.map(c => c.unidade).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
+
+      const atual = el.unid.value;
+      el.unid.innerHTML = `<option value="">Todas as unidades</option>`;
+
+      unidades.forEach((u) => {
+        const op = document.createElement("option");
+        op.value = u;
+        op.textContent = u;
+        el.unid.appendChild(op);
+      });
+
+      el.unid.value = atual;
+    }
+
+    function filtrarDados() {
+      const q = el.busca.value.trim().toLowerCase();
+      const un = el.unid.value;
+      const st = el.status.value;
+
+      return contratos.filter((c) => {
+        const status = calcularStatus(c.dataFimVigencia);
+        const txt = [
+          c.id,
+          c.numeroContrato,
+          c.empresa,
+          c.processoSei,
+          c.objeto
+        ].join(" ").toLowerCase();
+
+        return (!q || txt.includes(q)) &&
+               (!un || c.unidade === un) &&
+               (!st || status === st);
+      });
+    }
+
+    function atualizarKPIs(lista) {
+      const urg = lista.filter(c => {
+        const s = calcularStatus(c.dataFimVigencia);
+        return s === "Urgente" || s === "Atenção";
+      }).length;
+
+      const venc = lista.filter(c => calcularStatus(c.dataFimVigencia) === "Vencido").length;
+      const totalValor = lista.reduce((s, c) => s + (Number(c.valorTotal) || 0), 0);
+
+      el.kpiTotal.textContent = String(lista.length);
+      el.kpiUrgente.textContent = String(urg);
+      el.kpiVencido.textContent = String(venc);
+      el.kpiValor.textContent = money.format(totalValor);
+    }
+
+    function render() {
+      const lista = filtrarDados();
+      el.tbody.innerHTML = "";
+      atualizarKPIs(lista);
+
+      if (lista.length === 0) {
+        el.emptyState.classList.remove("hidden");
+      } else {
+        el.emptyState.classList.add("hidden");
+      }
+
+      lista.forEach((c) => {
+        const row = el.tRow.content.firstElementChild.cloneNode(true);
+
+        row.querySelector('[data-k="id"]').textContent = c.id || "";
+        row.querySelector('[data-k="numeroContrato"]').textContent = c.numeroContrato || "-";
+        row.querySelector('[data-k="empresa"]').textContent = c.empresa || "-";
+        row.querySelector('[data-k="unidade"]').textContent = c.unidade || "-";
+        row.querySelector('[data-k="dataFimVigencia"]').textContent = c.dataFimVigencia || "-";
+
+        const status = calcularStatus(c.dataFimVigencia);
+        const tdStatus = row.querySelector('[data-k="status"]');
+        tdStatus.textContent = status;
+        tdStatus.className =
+          "status " +
+          status.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "-");
+
+        row.querySelector('[data-k="valorTotal"]').textContent =
+          c.valorTotal ? money.format(Number(c.valorTotal)) : "-";
+
+        row.querySelector('[data-k="faseAtual"]').textContent = c.faseAtual || "-";
+
+        row.querySelector('[data-action="edit"]').addEventListener("click", () => {
+          abrirModal(c.id);
+        });
+
+        el.tbody.appendChild(row);
+      });
+    }
+
+    function gerarNovoId() {
+      const nums = contratos
+        .map(c => Number(String(c.id || "").replace(/\D/g, "")))
+        .filter(Boolean);
+
+      const next = (Math.max(0, ...nums) + 1).toString().padStart(4, "0");
+      return `CTR-${next}`;
+    }
+
+    function abrirModal(id = null) {
+      contratoEmEdicao = id;
+      el.form.reset();
+
+      const isEdit = !!id;
+      el.tituloModal.textContent = isEdit ? "Editar contrato" : "Novo contrato";
+      el.btnExcluir.classList.toggle("hidden", !isEdit);
+
+      const base = isEdit
+        ? contratos.find(c => c.id === id)
+        : {
+            id: gerarNovoId(),
+            origemAba: "Cadastro manual"
+          };
+
+      Object.entries(base).forEach(([k, v]) => {
+        if (el.form.elements[k]) {
+          el.form.elements[k].value = v ?? "";
+        }
+      });
+
+      el.modal.showModal();
+    }
+
+    function fecharModal() {
+      el.modal.close();
+      contratoEmEdicao = null;
+    }
+
+    async function salvarContrato(ev) {
+      ev.preventDefault();
+
+      const fd = new FormData(el.form);
+      const data = Object.fromEntries(fd.entries());
+      data.valorTotal = data.valorTotal ? Number(data.valorTotal) : null;
+
+      if (contratoEmEdicao) {
+        const atual = contratos.find(c => c.id === contratoEmEdicao);
+
+        await updateDoc(doc(db, "contratos", atual.docId), {
+          id: data.id || "",
+          numeroContrato: data.numeroContrato || "",
+          processoSei: data.processoSei || "",
+          empresa: data.empresa || "",
+          unidade: data.unidade || "",
+          modalidade: data.modalidade || "",
+          gestor: data.gestor || "",
+          fiscal: data.fiscal || "",
+          valorTotal: data.valorTotal || null,
+          dataFimVigencia: data.dataFimVigencia || "",
+          faseAtual: data.faseAtual || "",
+          proximaFase: data.proximaFase || "",
+          origemAba: data.origemAba || "",
+          objeto: data.objeto || "",
+          observacoes: data.observacoes || ""
+        });
+      } else {
+        await addDoc(collection(db, "contratos"), {
+          id: data.id || "",
+          numeroContrato: data.numeroContrato || "",
+          processoSei: data.processoSei || "",
+          empresa: data.empresa || "",
+          unidade: data.unidade || "",
+          modalidade: data.modalidade || "",
+          gestor: data.gestor || "",
+          fiscal: data.fiscal || "",
+          valorTotal: data.valorTotal || null,
+          dataFimVigencia: data.dataFimVigencia || "",
+          faseAtual: data.faseAtual || "",
+          proximaFase: data.proximaFase || "",
+          origemAba: data.origemAba || "",
+          objeto: data.objeto || "",
+          observacoes: data.observacoes || ""
+        });
+      }
+
+      await carregarBaseInicial();
+      preencherFiltroUnidade();
+      render();
+      fecharModal();
+    }
+
+    async function excluirContrato() {
+      if (!contratoEmEdicao) return;
+
+      const ok = confirm("Deseja excluir este contrato?");
+      if (!ok) return;
+
+      const atual = contratos.find(c => c.id === contratoEmEdicao);
+      await deleteDoc(doc(db, "contratos", atual.docId));
+
+      await carregarBaseInicial();
+      preencherFiltroUnidade();
+      render();
+      fecharModal();
+    }
+
+    function exportarJson() {
+      const blob = new Blob([JSON.stringify(contratos, null, 2)], {
+        type: "application/json"
+      });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "contratos-editados.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function importarJson(file) {
+      const texto = await file.text();
+
+      try {
+        const dados = JSON.parse(texto);
+
+        if (!Array.isArray(dados)) {
+          alert("JSON inválido.");
+          return;
+        }
+
+        const batch = writeBatch(db);
+
+        dados.forEach((item) => {
+          const ref = doc(collection(db, "contratos"));
+          batch.set(ref, item);
+        });
+
+        await batch.commit();
+
+        alert("Importação concluída com sucesso.");
+        await carregarBaseInicial();
+        preencherFiltroUnidade();
+        render();
+      } catch (e) {
+        console.error(e);
+        alert("Não foi possível importar o JSON.");
+      }
+    }
+
+    el.busca.addEventListener("input", render);
+    el.unid.addEventListener("change", render);
+    el.status.addEventListener("change", render);
+
+    el.btnLimpar.addEventListener("click", () => {
+      el.busca.value = "";
+      el.unid.value = "";
+      el.status.value = "";
+      render();
+    });
+
+    el.btnNovo.addEventListener("click", () => abrirModal());
+    el.btnFechar.addEventListener("click", fecharModal);
+    el.btnCancelar.addEventListener("click", fecharModal);
+    el.btnExcluir.addEventListener("click", excluirContrato);
+    el.btnExportar.addEventListener("click", exportarJson);
+
+    el.form.addEventListener("submit", salvarContrato);
+
+    el.inputImportar.addEventListener("change", async (e) => {
+      if (e.target.files[0]) {
+        await importarJson(e.target.files[0]);
+      }
+    });
+
+    document.querySelector(".btn-file").addEventListener("click", () => {
+      el.inputImportar.click();
+    });
+
     await carregarBaseInicial();
     preencherFiltroUnidade();
     render();
-  } catch (e) {
-    console.error(e);
-    alert("Não foi possível importar o JSON.");
-  }
-}
-
-/* =========================
-   EVENTOS
-========================= */
-el.busca.addEventListener("input", render);
-el.unid.addEventListener("change", render);
-el.status.addEventListener("change", render);
-
-el.btnLimpar.addEventListener("click", () => {
-  el.busca.value = "";
-  el.unid.value = "";
-  el.status.value = "";
-  render();
-});
-
-el.btnNovo.addEventListener("click", () => abrirModal());
-el.btnFechar.addEventListener("click", fecharModal);
-el.btnCancelar.addEventListener("click", fecharModal);
-el.btnExcluir.addEventListener("click", excluirContrato);
-el.btnExportar.addEventListener("click", exportarJson);
-
-el.form.addEventListener("submit", salvarContrato);
-
-el.inputImportar.addEventListener("change", async (e) => {
-  if (e.target.files[0]) {
-    await importarJson(e.target.files[0]);
-  }
-});
-
-document.querySelector(".btn-file").addEventListener("click", () => {
-  el.inputImportar.click();
-});
-
-/* =========================
-   INICIAR
-========================= */
-await carregarBaseInicial();
-preencherFiltroUnidade();
-render();
-</script>
+  </script>
+</body>
+</html>
