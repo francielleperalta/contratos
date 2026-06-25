@@ -1,37 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Contratos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f5f7fb;
+    }
+
+    h1 {
+      color: #1f3c88;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1f3c88;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .urgente {
+      background-color: #ffe5e5;
+      color: #b30000;
+      font-weight: bold;
+    }
+
+    .normal {
+      background-color: #e7f7e7;
+      color: #1f7a1f;
+      font-weight: bold;
+    }
+  </style>
+</head>
 <body>
 
-<h2>📊 Lista de Contratos</h2>
+  <h1>📊 Lista de Contratos</h1>
 
-<ul id="lista"></ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Contrato</th>
+        <th>Empresa</th>
+        <th>Vencimento</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-contratos"></tbody>
+  </table>
 
-<script>
+  <script>
+    const contratos = [
+      {
+        numero_contrato: "001",
+        empresa: "Empresa Teste",
+        data_fim_vigencia: "2026-12-31"
+      },
+      {
+        numero_contrato: "002",
+        empresa: "Fornecedor Alpha",
+        data_fim_vigencia: "2026-07-10"
+      },
+      {
+        numero_contrato: "003",
+        empresa: "Prestadora Beta",
+        data_fim_vigencia: "2026-06-20"
+      }
+    ];
 
-// simulando seu banco (igual ao Firebase)
-const contratos = [
-  {
-    numero_contrato: "001",
-    empresa: "Empresa Teste",
-    data_fim_vigencia: "2026-12-31"
-  }
-];
+    function calcularStatus(dataFim) {
+      const hoje = new Date();
+      const vencimento = new Date(dataFim);
+      const diff = Math.ceil((vencimento - hoje) / (1000 * 60 * 60 * 24));
 
-// mostra na tela
-const lista = document.getElementById("lista");
+      if (diff <= 30) return "Urgente";
+      return "Normal";
+    }
 
-contratos.forEach(c => {
-  const li = document.createElement("li");
+    const tabela = document.getElementById("tabela-contratos");
 
-  li.textContent =
-    "Contrato: " + c.numero_contrato +
-    " | Empresa: " + c.empresa +
-    " | Vencimento: " + c.data_fim_vigencia;
+    contratos.forEach(c => {
+      const status = calcularStatus(c.data_fim_vigencia);
 
-  lista.appendChild(li);
-});
+      const linha = document.createElement("tr");
 
-</script>
+      linha.innerHTML = `
+        <td>${c.numero_contrato}</td>
+        <td>${c.empresa}</td>
+        <td>${c.data_fim_vigencia}</td>
+        <td class="${status === "Urgente" ? "urgente" : "normal"}">${status}</td>
+      `;
+
+      tabela.appendChild(linha);
+    });
+  </script>
 
 </body>
 </html>
