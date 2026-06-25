@@ -1,115 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Lista de Contratos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 30px;
-      background-color: #f5f7fb;
-    }
-
-    h1 {
-      color: #1f3c88;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #1f3c88;
-      color: white;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    .urgente {
-      background-color: #ffe5e5;
-      color: #b30000;
-      font-weight: bold;
-    }
-
-    .normal {
-      background-color: #e7f7e7;
-      color: #1f7a1f;
-      font-weight: bold;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Contratos</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="topbar">
+    <div>
+      <h1>📊 Sistema de Contratos</h1>
+      <p class="subtitle">Base editável gerada a partir da planilha Contratações SGI - 2026</p>
+    </div>
+    <div class="actions">
+      <button id="btnExportar">Exportar JSON</button>
+      <label class="btn-file">Importar JSON<input type="file" id="inputImportar" accept="application/json" hidden /></label>
+      <button id="btnNovo" class="primary">+ Novo contrato</button>
+    </div>
+  </header>
 
-  <h1>📊 Lista de Contratos</h1>
+  <section class="cards">
+    <div class="card"><span>Total</span><strong id="kpiTotal">0</strong></div>
+    <div class="card"><span>Urgentes</span><strong id="kpiUrgente">0</strong></div>
+    <div class="card"><span>Vencidos</span><strong id="kpiVencido">0</strong></div>
+    <div class="card"><span>Valor total</span><strong id="kpiValor">R$ 0,00</strong></div>
+  </section>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Contrato</th>
-        <th>Empresa</th>
-        <th>Vencimento</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="tabela-contratos"></tbody>
-  </table>
+  <section class="filters">
+    <input type="text" id="fBusca" placeholder="Buscar por contrato, empresa, processo ou objeto" />
+    <select id="fUnidade"><option value="">Todas as unidades</option></select>
+    <select id="fStatus">
+      <option value="">Todos os status</option>
+      <option value="Normal">Normal</option>
+      <option value="Atenção">Atenção</option>
+      <option value="Urgente">Urgente</option>
+      <option value="Vencido">Vencido</option>
+      <option value="Sem data">Sem data</option>
+    </select>
+    <button id="btnLimpar">Limpar filtros</button>
+  </section>
 
-  <script>
-    const contratos = [
-      {
-        numero_contrato: "001",
-        empresa: "Empresa Teste",
-        data_fim_vigencia: "2026-12-31"
-      },
-      {
-        numero_contrato: "002",
-        empresa: "Fornecedor Alpha",
-        data_fim_vigencia: "2026-07-10"
-      },
-      {
-        numero_contrato: "003",
-        empresa: "Prestadora Beta",
-        data_fim_vigencia: "2026-06-20"
-      }
-    ];
+  <section class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Contrato</th>
+          <th>Empresa</th>
+          <th>Unidade</th>
+          <th>Vigência</th>
+          <th>Status</th>
+          <th>Valor</th>
+          <th>Fase atual</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyContratos"></tbody>
+    </table>
+  </section>
 
-    function calcularStatus(dataFim) {
-      const hoje = new Date();
-      const vencimento = new Date(dataFim);
-      const diff = Math.ceil((vencimento - hoje) / (1000 * 60 * 60 * 24));
+  <dialog id="modalContrato">
+    <form method="dialog" id="formContrato">
+      <div class="modal-header">
+        <h2 id="tituloModal">Novo contrato</h2>
+        <button type="button" id="btnFechar" class="icon">✕</button>
+      </div>
+      <div class="grid">
+        <label>ID<input name="id" required /></label>
+        <label>Número do contrato<input name="numeroContrato" /></label>
+        <label>Processo SEI<input name="processoSei" /></label>
+        <label>Empresa<input name="empresa" /></label>
+        <label>Unidade<input name="unidade" /></label>
+        <label>Modalidade<input name="modalidade" /></label>
+        <label>Gestor<input name="gestor" /></label>
+        <label>Fiscal<input name="fiscal" /></label>
+        <label>Valor total<input name="valorTotal" type="number" step="0.01" /></label>
+        <label>Data fim vigência<input name="dataFimVigencia" type="date" /></label>
+        <label>Fase atual<input name="faseAtual" /></label>
+        <label>Próxima fase<input name="proximaFase" /></label>
+        <label class="full">Origem/aba<input name="origemAba" /></label>
+        <label class="full">Objeto<textarea name="objeto" rows="3"></textarea></label>
+        <label class="full">Observações<textarea name="observacoes" rows="4"></textarea></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="btnExcluir" class="danger hidden">Excluir</button>
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" class="primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
 
-      if (diff <= 30) return "Urgente";
-      return "Normal";
-    }
+  <template id="rowTemplate">
+    <tr>
+      <td data-k="id"></td>
+      <td data-k="numeroContrato"></td>
+      <td data-k="empresa"></td>
+      <td data-k="unidade"></td>
+      <td data-k="dataFimVigencia"></td>
+      <td data-k="status"></td>
+      <td data-k="valorTotal"></td>
+      <td data-k="faseAtual"></td>
+      <td>
+        <button data-action="edit">Editar</button>
+      </td>
+    </tr>
+  </template>
 
-    const tabela = document.getElementById("tabela-contratos");
-
-    contratos.forEach(c => {
-      const status = calcularStatus(c.data_fim_vigencia);
-
-      const linha = document.createElement("tr");
-
-      linha.innerHTML = `
-        <td>${c.numero_contrato}</td>
-        <td>${c.empresa}</td>
-        <td>${c.data_fim_vigencia}</td>
-        <td class="${status === "Urgente" ? "urgente" : "normal"}">${status}</td>
-      `;
-
-      tabela.appendChild(linha);
-    });
-  </script>
-
+  <script src="app.js" type="module"></script>
 </body>
 </html>
