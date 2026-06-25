@@ -15,33 +15,29 @@
       --brand: #1f4aa8;
       --brand-2: #337eff;
       --success: #12b76a;
-      --warning: #f79009;
-      --danger: #f04438;
-      --critical: #d92d20;
-      --dark: #111827;
+      --warning: #facc15;
+      --orange: #fb923c;
+      --danger: #ef4444;
+      --critical: #111827;
       --shadow: 0 10px 30px rgba(16,24,40,.08);
       --radius: 18px;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); }
     .loading { opacity: .65; pointer-events: none; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:20px 24px; background:rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:20px 24px; background:rgba(255,255,255,.88); backdrop-filter: blur(12px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
     .title h1 { margin:0; color:var(--brand); font-size:28px; }
     .subtitle { margin-top:6px; color:var(--muted); font-size:14px; }
     .actions { display:flex; gap:10px; flex-wrap:wrap; }
     button, .btn-file { border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:14px; padding:10px 14px; cursor:pointer; font-weight:600; transition:all .2s ease; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
     button:hover, .btn-file:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
     .primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
-    .success { background:#ecfdf3; border-color:#b7ebcf; color:#027a48; }
-    .danger { background:#fff3f2; border-color:#ffd2cc; color:#b42318; }
+    .success-btn { background:#ecfdf3; border-color:#b7ebcf; color:#027a48; }
+    .danger-btn { background:#fff3f2; border-color:#ffd2cc; color:#b42318; }
     .ghost { background: var(--surface-alt); }
-    .container { padding: 20px 24px 28px; }
-    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
-    .tab-btn.active { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
-    .tab-panel { display:none; animation: fadeIn .25s ease; }
-    .tab-panel.active { display:block; }
-    .info { margin-bottom:16px; padding:12px 14px; border-radius:14px; background:#eef4ff; color:#1849a9; border:1px solid #cfe0ff; }
-    .cards { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .container { padding: 20px 24px 28px; display:grid; gap:16px; }
+    .info { padding:12px 14px; border-radius:14px; background:#eef4ff; color:#1849a9; border:1px solid #cfe0ff; font-size:14px; }
+    .cards { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
     .card { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:18px; position:relative; overflow:hidden; transition: all .25s ease; }
     .card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; border-radius: 18px 0 0 18px; background: var(--brand); }
     .card:hover { transform: translateY(-2px); }
@@ -50,30 +46,36 @@
     .card .hint { margin:8px 0 0; font-size:12px; color: var(--muted); }
     .card.blue::before { background:#2563eb; }
     .card.green::before { background:#16a34a; }
-    .card.orange::before { background:#f59e0b; }
-    .card.red::before { background:#dc2626; }
+    .card.orange::before { background:#fb923c; }
+    .card.red::before { background:#ef4444; }
     .card.black::before { background:#111827; }
-    .card.purple::before { background:#7c3aed; }
-    .filters { display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; margin-bottom: 16px; }
-    .input, select, textarea { width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:14px; background:var(--surface); font-size:14px; color:var(--text); }
-    .chip-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); background:#fff; padding:6px 10px; border-radius:999px; font-size:12px; }
+    .card.yellow::before { background:#facc15; }
     .grid-2 { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; }
+    .grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
     .panel { background: var(--surface); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding:16px; }
-    .panel h3 { margin:0 0 12px; color:var(--brand); font-size:18px; }
+    .panel h2, .panel h3 { margin:0 0 12px; color:var(--brand); }
+    .small { color:var(--muted); font-size:12px; }
+    .filters { display:grid; grid-template-columns: 2fr 1fr 1fr 1fr auto auto; gap: 12px; align-items:start; }
+    .input, select, textarea { width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:14px; background:var(--surface); font-size:14px; color:var(--text); }
+    .chip-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); background:#fff; padding:6px 10px; border-radius:999px; font-size:12px; }
     .table-wrap { overflow:auto; }
-    table { width:100%; border-collapse:collapse; background: var(--surface); border-radius: var(--radius); overflow:hidden; }
+    table { width:100%; border-collapse:collapse; background: var(--surface); overflow:hidden; }
     thead th { position: sticky; top:0; z-index:2; background: #edf4ff; color:#1e3a8a; border-bottom:1px solid var(--border); cursor:pointer; }
-    th, td { padding: 12px 10px; text-align:left; border-bottom:1px solid #eef2f7; font-size:14px; vertical-align:top; }
+    th, td { padding: 12px 10px; text-align:left; border-bottom:1px solid #eef2f7; font-size:13px; vertical-align:top; }
     tbody tr:nth-child(even) { background:#fbfdff; }
     tbody tr:hover { background:#f3f8ff; }
-    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid transparent; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid transparent; white-space:nowrap; }
     .st-vigente { background:#ecfdf3; color:#027a48; border-color:#b7ebcf; }
     .st-atencao { background:#fffaeb; color:#b54708; border-color:#fedf89; }
     .st-urgente { background:#fff7ed; color:#c2410c; border-color:#fdba74; }
     .st-critico { background:#fff1f2; color:#be123c; border-color:#fda4af; }
     .st-vencido { background:#111827; color:#fff; border-color:#111827; }
     .st-sem-data { background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; }
+    .up-7 { background:#ecfdf3; color:#027a48; border-color:#b7ebcf; }
+    .up-30 { background:#fffaeb; color:#b54708; border-color:#fedf89; }
+    .up-old { background:#fff1f2; color:#be123c; border-color:#fda4af; }
+    .up-none { background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; }
     .semaforo { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:999px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
     .sem-verde { background:#16a34a; }
     .sem-amarelo { background:#facc15; }
@@ -86,71 +88,91 @@
     .page-btn.active { background: linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff; border-color:transparent; }
     .drawer-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter: blur(4px); display:none; z-index:200; }
     .drawer-backdrop.open { display:block; }
-    .drawer { position:absolute; right:0; top:0; height:100%; width:min(760px, 100%); background:var(--surface); box-shadow:-10px 0 40px rgba(2,6,23,.15); padding:0; display:flex; flex-direction:column; }
+    .drawer { position:absolute; right:0; top:0; height:100%; width:min(820px, 100%); background:var(--surface); box-shadow:-10px 0 40px rgba(2,6,23,.15); display:flex; flex-direction:column; }
     .drawer-header { display:flex; justify-content:space-between; align-items:center; padding:18px 20px; border-bottom:1px solid var(--border); }
     .drawer-body { padding:18px 20px; overflow:auto; flex:1; }
     .form-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
     .full { grid-column:1 / -1; }
     .drawer-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 20px; border-top:1px solid var(--border); }
     .alert-box { border:1px solid var(--border); border-left:6px solid var(--danger); background:#fff; color:#7a271a; border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow); }
-    .alert-box.warning { border-left-color:var(--warning); color:#7a2e0e; }
+    .alert-box.warning { border-left-color:var(--orange); color:#7a2e0e; }
     .alert-box.success { border-left-color:var(--success); color:#065f46; }
     .alert-box.dark { border-left-color:#111827; color:#111827; }
-    .timeline { display:flex; flex-direction:column; gap:12px; }
-    .timeline-item { position:relative; padding-left:22px; }
-    .timeline-item::before { content:''; position:absolute; left:6px; top:8px; width:10px; height:10px; border-radius:999px; background:var(--brand); }
-    .timeline-item::after { content:''; position:absolute; left:10px; top:20px; bottom:-8px; width:2px; background:#dbe3f0; }
-    .timeline-item:last-child::after { display:none; }
-    .calendar-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
-    .month-col { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px; }
-    .month-col h4 { margin:0 0 10px; color:var(--brand); }
-    .month-item { border:1px solid #edf2f7; border-radius:12px; padding:10px; margin-bottom:8px; background:#fff; }
-    .unit-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
-    .small { color:var(--muted); font-size:12px; }
     .empty { color:var(--muted); font-style:italic; }
-    .tooltip { border-bottom:1px dotted var(--muted); cursor:help; }
-    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-    .fade-in { animation: fadeIn .25s ease; }
-    @media (max-width: 1200px) { .cards { grid-template-columns: repeat(3, 1fr); } .calendar-grid, .unit-grid, .grid-2 { grid-template-columns:1fr; } }
-    @media (max-width: 768px) { .topbar { flex-direction:column; align-items:flex-start; } .cards { grid-template-columns: repeat(2,1fr); } .filters { grid-template-columns:1fr; } .form-grid { grid-template-columns:1fr; } .container { padding:16px; } }
+    .unit-card { padding:14px; border:1px solid #eef2f7; border-radius:14px; background:#fff; }
+    .list-clean { margin:0; padding-left:18px; }
+    .list-clean li { margin:4px 0; }
+    @media (max-width: 1280px) { .cards { grid-template-columns: repeat(3,1fr); } .grid-2, .grid-3 { grid-template-columns:1fr; } }
+    @media (max-width: 820px) { .topbar { flex-direction:column; align-items:flex-start; } .cards { grid-template-columns: repeat(2,1fr); } .filters { grid-template-columns:1fr; } .form-grid { grid-template-columns:1fr; } .container { padding:16px; } }
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="title">
       <h1>📊 Sistema de Contratos Estratégico</h1>
-      <div class="subtitle">Plataforma de gestão contratual estratégica da Superintendência de Gestão Integrada — com inteligência, acompanhamento, dashboard e alertas.</div>
+      <div class="subtitle">Ferramenta de gestão estratégica, conferência e acompanhamento contratual da Superintendência de Gestão Integrada.</div>
     </div>
     <div class="actions">
-      <label class="btn-file success" title="Importar planilha Excel (.xlsx ou .xls)">Importar Excel<input type="file" id="inputExcel" accept=".xlsx,.xls" hidden /></label>
-      <button id="btnSalvarFiltros" class="ghost" title="Salvar filtros atuais">Salvar filtros</button>
-      <button id="btnAtualizar" class="ghost" title="Atualizar dados do Firebase">Atualizar dados</button>
+      <label class="btn-file success-btn" title="Importar planilha Excel (.xlsx ou .xls)">Importar Excel<input type="file" id="inputExcel" accept=".xlsx,.xls" hidden /></label>
+      <button id="btnExportarBackup" class="ghost" title="Exportar backup completo em JSON">Exportar Backup JSON</button>
+      <button id="btnSalvarFiltros" class="ghost">Salvar filtros</button>
+      <button id="btnAtualizar" class="ghost">Atualizar dados</button>
       <button id="btnNovo" class="primary">+ Novo contrato</button>
     </div>
   </header>
 
   <div class="container">
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="contratos">Contratos</button>
-      <button class="tab-btn" data-tab="dashboard">Dashboard</button>
-      <button class="tab-btn" data-tab="alertas">Alertas</button>
-      <button class="tab-btn" data-tab="calendario">Calendário</button>
-      <button class="tab-btn" data-tab="unidades">Unidades</button>
-    </div>
+    <div class="info">Sem novas abas. Tudo em uma página única: dashboard estratégico, pendências, relatório executivo, ranking de risco, importação inteligente do Excel e edição detalhada por drawer lateral.</div>
 
-    <section class="cards fade-in">
-      <div class="card blue"><div class="label">Total de contratos</div><div class="value" id="kpiTotal">0</div><div class="hint">Volume total monitorado</div></div>
-      <div class="card orange"><div class="label">Urgentes (≤ 60 dias)</div><div class="value" id="kpiUrgentes">0</div><div class="hint">Urgente + Crítico</div></div>
-      <div class="card red"><div class="label">Vencidos</div><div class="value" id="kpiVencidos">0</div><div class="hint">Exigem providência imediata</div></div>
-      <div class="card green"><div class="label">Valor total administrado</div><div class="value" id="kpiValor">R$ 0,00</div><div class="hint">Somatório da base ativa</div></div>
-      <div class="card purple"><div class="label">Vencem em 30 dias</div><div class="value" id="kpi30">0</div><div class="hint">Faixa crítica</div></div>
-      <div class="card black"><div class="label">Sem data</div><div class="value" id="kpiSemData">0</div><div class="hint">Pendência cadastral</div></div>
+    <section class="cards">
+      <div class="card blue"><div class="label">Total de contratos</div><div class="value" id="kpiTotal">0</div><div class="hint">Base contratual total</div></div>
+      <div class="card green"><div class="label">Valor total administrado</div><div class="value" id="kpiValor">R$ 0,00</div><div class="hint">Somatório dos contratos</div></div>
+      <div class="card red"><div class="label">Contratos vencidos</div><div class="value" id="kpiVencidos">0</div><div class="hint">Exigem providência imediata</div></div>
+      <div class="card orange"><div class="label">Vencendo em 30 dias</div><div class="value" id="kpi30">0</div><div class="hint">Faixa crítica</div></div>
+      <div class="card yellow"><div class="label">Sem atualização recente</div><div class="value" id="kpiSemAtualizacao">0</div><div class="hint">Acima de 30 dias ou sem data</div></div>
+      <div class="card black"><div class="label">Pendências cadastrais</div><div class="value" id="kpiPendencias">0</div><div class="hint">Sem gestor/fiscal/atualização</div></div>
     </section>
 
-    <section id="tab-contratos" class="tab-panel active fade-in">
-      <div class="info">Importe o Excel e acompanhe automaticamente dias restantes, classificação contratual, semáforo, próximos vencimentos, fase atual, próxima fase e contratos que precisam de providência nesta semana.</div>
+    <section class="grid-2">
+      <div class="panel">
+        <h2>Dashboard de pendências</h2>
+        <div id="dashboardPendencias"></div>
+      </div>
+      <div class="panel">
+        <h2>Relatório executivo</h2>
+        <div id="relatorioExecutivo"></div>
+      </div>
+    </section>
 
-      <section class="filters">
+    <section class="grid-3">
+      <div class="panel">
+        <h3>Contratos por status</h3>
+        <canvas id="chartStatus" height="120"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Contratos por unidade</h3>
+        <canvas id="chartUnidade" height="120"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Vencendo em 30, 60 e 90 dias</h3>
+        <canvas id="chartFaixas" height="120"></canvas>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <h2>Ranking das unidades com mais contratos próximos do vencimento</h2>
+        <div id="rankingUnidades"></div>
+      </div>
+      <div class="panel">
+        <h2>Central de notificações</h2>
+        <div id="centralNotificacoes"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Filtros e monitoramento</h2>
+      <div class="filters">
         <input class="input" id="fBusca" placeholder="Buscar por contrato, empresa, processo ou objeto" aria-label="Buscar contratos" />
         <select id="fUnidade" aria-label="Filtrar por unidade"><option value="">Todas as unidades</option></select>
         <select id="fStatus" aria-label="Filtrar por status">
@@ -162,25 +184,40 @@
           <option value="Vencido">Vencido</option>
           <option value="Sem data">Sem data</option>
         </select>
+        <select id="fAtualizacao" aria-label="Filtrar por atualização">
+          <option value="">Toda atualização</option>
+          <option value="lt7">Atualizado há menos de 7 dias</option>
+          <option value="lt30">Atualizado há menos de 30 dias</option>
+          <option value="gt30">Atualizado há mais de 30 dias</option>
+          <option value="none">Sem atualização</option>
+        </select>
         <button id="btnLimpar">Limpar filtros</button>
-      </section>
+        <button id="btnSemanas" class="ghost" title="Contratos que precisam de providência nesta semana">Providência desta semana</button>
+      </div>
       <div class="chip-row" id="chipsFiltros"></div>
-      <div id="emptyState" class="empty hidden">Nenhum contrato encontrado.</div>
-      <div class="table-wrap panel">
+    </section>
+
+    <section class="panel">
+      <h2>Tabela estratégica de contratos</h2>
+      <div class="small" style="margin-bottom:12px;">Agora com: última atualização, responsável pela atualização, providência necessária, situação do processo e indicador visual de atualização.</div>
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th data-sort="id">ID</th>
               <th data-sort="numeroContrato">Contrato</th>
+              <th data-sort="processoSei">Processo SEI</th>
               <th data-sort="empresa">Empresa</th>
               <th data-sort="unidade">Unidade</th>
               <th data-sort="dataFimVigencia">Vigência</th>
               <th>Status</th>
               <th>Semáforo</th>
               <th data-sort="diasRestantes">Dias</th>
-              <th data-sort="valorTotal">Valor</th>
-              <th>Fase atual</th>
-              <th>Próxima fase</th>
+              <th data-sort="ultimaAtualizacao">Última atualização</th>
+              <th>Resp. atualização</th>
+              <th>Providência necessária</th>
+              <th>Situação do processo</th>
+              <th>Fase atual / Próxima</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -191,59 +228,6 @@
           <div class="pages" id="pages"></div>
         </div>
       </div>
-
-      <div class="panel" style="margin-top:16px;">
-        <h3>Cards de ação — Contratos que precisam de providência nesta semana</h3>
-        <div id="cardsAcao"></div>
-      </div>
-    </section>
-
-    <section id="tab-dashboard" class="tab-panel fade-in">
-      <div class="grid-2">
-        <div class="panel">
-          <h3>Contratos por status</h3>
-          <canvas id="chartStatus" height="120"></canvas>
-        </div>
-        <div class="panel">
-          <h3>Contratos por unidade</h3>
-          <canvas id="chartUnidade" height="120"></canvas>
-        </div>
-      </div>
-      <div class="grid-2" style="margin-top:16px;">
-        <div class="panel">
-          <h3>Contratos vencendo em 30, 60 e 90 dias</h3>
-          <canvas id="chartFaixas" height="120"></canvas>
-        </div>
-        <div class="panel">
-          <h3>Resumo executivo</h3>
-          <div id="resumoExecutivo"></div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:16px;">
-        <h3>Timeline contratual</h3>
-        <div class="timeline" id="timelineContratual"></div>
-      </div>
-    </section>
-
-    <section id="tab-alertas" class="tab-panel fade-in">
-      <div class="grid-2">
-        <div class="panel"><h3>Central de notificações</h3><div id="centralNotificacoes"></div></div>
-        <div class="panel"><h3>Monitor de conferência</h3><div id="monitorConferencia"></div></div>
-      </div>
-    </section>
-
-    <section id="tab-calendario" class="tab-panel fade-in">
-      <div class="panel">
-        <h3>Calendário de vencimentos</h3>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
-    </section>
-
-    <section id="tab-unidades" class="tab-panel fade-in">
-      <div class="panel">
-        <h3>Painel por unidade</h3>
-        <div class="unit-grid" id="unitGrid"></div>
-      </div>
     </section>
   </div>
 
@@ -252,7 +236,7 @@
       <div class="drawer-header">
         <div>
           <h3 id="drawerTitle" style="margin:0;color:var(--brand);">Novo contrato</h3>
-          <div class="small">Visualize e edite sem trocar de página</div>
+          <div class="small">Edição estratégica do contrato sem sair da tela</div>
         </div>
         <button id="btnCloseDrawer" class="ghost" aria-label="Fechar drawer">✕</button>
       </div>
@@ -270,13 +254,17 @@
           <label>Data fim vigência<input class="input" name="dataFimVigencia" type="date" /></label>
           <label>Fase atual<input class="input" name="faseAtual" /></label>
           <label>Próxima fase<input class="input" name="proximaFase" /></label>
+          <label>Última atualização<input class="input" name="ultimaAtualizacao" type="date" /></label>
+          <label>Responsável pela atualização<input class="input" name="responsavelAtualizacao" /></label>
+          <label>Situação do processo<input class="input" name="situacaoProcesso" /></label>
+          <label>Providência necessária<input class="input" name="providenciaNecessaria" /></label>
           <label class="full">Origem / aba<input class="input" name="origemAba" /></label>
           <label class="full">Objeto<textarea class="input" rows="3" name="objeto"></textarea></label>
           <label class="full">Observações<textarea class="input" rows="4" name="observacoes"></textarea></label>
         </div>
       </form>
       <div class="drawer-footer">
-        <button id="btnExcluir" type="button" class="danger hidden">Excluir</button>
+        <button id="btnExcluir" type="button" class="danger-btn">Excluir</button>
         <div style="display:flex;gap:10px;">
           <button id="btnCancelarDrawer" type="button">Cancelar</button>
           <button id="btnSalvarDrawer" type="button" class="primary">Salvar</button>
@@ -308,19 +296,13 @@
     let contratos = [];
     let contratoEmEdicao = null;
     let page = 1;
-    const pageSize = 12;
+    const pageSize = 10;
     let sortBy = 'numeroContrato';
     let sortDir = 'asc';
     let chartStatus, chartUnidade, chartFaixas;
 
     const $ = (id) => document.getElementById(id);
-    const state = {
-      busca: $('fBusca'),
-      unidade: $('fUnidade'),
-      status: $('fStatus'),
-    };
-
-    const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const currency = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
 
     function hojeISO() { return new Date().toISOString().slice(0,10); }
     function diasRestantes(data) {
@@ -349,9 +331,21 @@
       return 'sem-verde';
     }
     function badgeClass(status) {
-      return {
-        'Vigente':'st-vigente','Atenção':'st-atencao','Urgente':'st-urgente','Crítico':'st-critico','Vencido':'st-vencido','Sem data':'st-sem-data'
-      }[status] || 'st-sem-data';
+      return { 'Vigente':'st-vigente','Atenção':'st-atencao','Urgente':'st-urgente','Crítico':'st-critico','Vencido':'st-vencido','Sem data':'st-sem-data' }[status] || 'st-sem-data';
+    }
+    function updateIndicatorClass(ultimaAtualizacao) {
+      if (!ultimaAtualizacao) return 'up-none';
+      const d = diasRestantes(ultimaAtualizacao) * -1; // dias desde atualização
+      if (d <= 7) return 'up-7';
+      if (d <= 30) return 'up-30';
+      return 'up-old';
+    }
+    function updateIndicatorLabel(ultimaAtualizacao) {
+      if (!ultimaAtualizacao) return 'Sem atualização';
+      const d = diasRestantes(ultimaAtualizacao) * -1;
+      if (d <= 7) return 'Atualizado < 7 dias';
+      if (d <= 30) return 'Atualizado < 30 dias';
+      return 'Atualizado > 30 dias';
     }
     function cleanText(v) {
       if (v === null || v === undefined) return '';
@@ -382,131 +376,145 @@
     function norm(s) {
       return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
     }
-    function findCol(cols,candidates) {
+    function findCol(cols, candidates) {
       for (const cand of candidates) { const exact = cols.find(c=>c===cand); if (exact) return exact; }
       for (const cand of candidates) { const partial = cols.find(c=>c.includes(cand)); if (partial) return partial; }
       return null;
     }
-    function enriquecido(c) {
-      const status = classificarContrato(c.dataFimVigencia);
-      return { ...c, status, diasRestantes: diasRestantes(c.dataFimVigencia), semaforo: corSemaforo(c.dataFimVigencia) };
+    function enrich(contract) {
+      const status = classificarContrato(contract.dataFimVigencia);
+      const dias = diasRestantes(contract.dataFimVigencia);
+      return {
+        ...contract,
+        status,
+        diasRestantes: dias,
+        semaforo: corSemaforo(contract.dataFimVigencia),
+        indicadorAtualizacao: updateIndicatorLabel(contract.ultimaAtualizacao),
+        indicadorAtualizacaoClasse: updateIndicatorClass(contract.ultimaAtualizacao)
+      };
     }
 
     async function carregarBase() {
       const snap = await getDocs(collection(db, 'contratos'));
       contratos = [];
-      snap.forEach(docItem => contratos.push(enriquecido({ docId: docItem.id, ...docItem.data() })));
+      snap.forEach(d => contratos.push(enrich({ docId: d.id, ...d.data() })));
     }
 
     function preencherUnidades() {
       const unidades = [...new Set(contratos.map(c=>c.unidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-      const atual = state.unidade.value;
-      state.unidade.innerHTML = '<option value="">Todas as unidades</option>';
-      unidades.forEach(u => {
-        const op = document.createElement('option'); op.value = u; op.textContent = u; state.unidade.appendChild(op);
-      });
-      state.unidade.value = atual;
+      const atual = $('fUnidade').value;
+      $('fUnidade').innerHTML = '<option value="">Todas as unidades</option>';
+      unidades.forEach(u => { const op = document.createElement('option'); op.value=u; op.textContent=u; $('fUnidade').appendChild(op); });
+      $('fUnidade').value = atual;
     }
 
     function salvarFiltros() {
-      localStorage.setItem('sgi-contratos-filtros', JSON.stringify({ busca: state.busca.value, unidade: state.unidade.value, status: state.status.value }));
-      alert('Filtros salvos com sucesso.');
+      localStorage.setItem('sgi-filtros-estrategicos', JSON.stringify({
+        busca: $('fBusca').value,
+        unidade: $('fUnidade').value,
+        status: $('fStatus').value,
+        atualizacao: $('fAtualizacao').value,
+      }));
+      alert('Filtros salvos.');
     }
     function carregarFiltros() {
       try {
-        const raw = localStorage.getItem('sgi-contratos-filtros');
+        const raw = localStorage.getItem('sgi-filtros-estrategicos');
         if (!raw) return;
         const f = JSON.parse(raw);
-        state.busca.value = f.busca || '';
-        state.unidade.value = f.unidade || '';
-        state.status.value = f.status || '';
+        $('fBusca').value = f.busca || '';
+        $('fUnidade').value = f.unidade || '';
+        $('fStatus').value = f.status || '';
+        $('fAtualizacao').value = f.atualizacao || '';
       } catch {}
     }
 
-    function filtrados() {
-      const q = state.busca.value.trim().toLowerCase();
-      const un = state.unidade.value;
-      const st = state.status.value;
+    function filtrar() {
+      const q = $('fBusca').value.trim().toLowerCase();
+      const un = $('fUnidade').value;
+      const st = $('fStatus').value;
+      const att = $('fAtualizacao').value;
       return contratos.filter(c => {
-        const txt = [c.id,c.numeroContrato,c.empresa,c.objeto,c.processoSei].join(' ').toLowerCase();
-        return (!q || txt.includes(q)) && (!un || c.unidade === un) && (!st || c.status === st);
+        const txt = [c.id,c.numeroContrato,c.processoSei,c.empresa,c.objeto].join(' ').toLowerCase();
+        const okBusca = !q || txt.includes(q);
+        const okUn = !un || c.unidade === un;
+        const okStatus = !st || c.status === st;
+        let okAtt = true;
+        const ind = c.indicadorAtualizacao;
+        if (att === 'lt7') okAtt = ind === 'Atualizado < 7 dias';
+        if (att === 'lt30') okAtt = ind === 'Atualizado < 30 dias';
+        if (att === 'gt30') okAtt = ind === 'Atualizado > 30 dias';
+        if (att === 'none') okAtt = ind === 'Sem atualização';
+        return okBusca && okUn && okStatus && okAtt;
       });
     }
 
     function updateChips() {
-      const chips = [];
-      if (state.busca.value) chips.push({ k:'Busca', v: state.busca.value, reset: ()=>state.busca.value='' });
-      if (state.unidade.value) chips.push({ k:'Unidade', v: state.unidade.value, reset: ()=>state.unidade.value='' });
-      if (state.status.value) chips.push({ k:'Status', v: state.status.value, reset: ()=>state.status.value='' });
-      $('chipsFiltros').innerHTML = chips.map((c, i) => `<button class="chip" data-chip="${i}"><strong>${c.k}:</strong> ${c.v} ✕</button>`).join('');
-      [...$('chipsFiltros').querySelectorAll('[data-chip]')].forEach((btn, idx)=>btn.addEventListener('click',()=>{ chips[idx].reset(); renderAll(); }));
+      const list = [];
+      if ($('fBusca').value) list.push(['Busca', $('fBusca').value, ()=>$('fBusca').value='']);
+      if ($('fUnidade').value) list.push(['Unidade', $('fUnidade').value, ()=>$('fUnidade').value='']);
+      if ($('fStatus').value) list.push(['Status', $('fStatus').value, ()=>$('fStatus').value='']);
+      if ($('fAtualizacao').value) list.push(['Atualização', $('fAtualizacao').value, ()=>$('fAtualizacao').value='']);
+      $('chipsFiltros').innerHTML = list.map((c,i)=>`<button class="chip" data-chip="${i}"><strong>${c[0]}:</strong> ${c[1]} ✕</button>`).join('');
+      [...$('chipsFiltros').querySelectorAll('[data-chip]')].forEach((btn,i)=>btn.addEventListener('click',()=>{ list[i][2](); page=1; renderAll(); }));
     }
 
-    function sortItems(items) {
+    function sorted(items) {
       return [...items].sort((a,b)=>{
         const A = a[sortBy] ?? '';
         const B = b[sortBy] ?? '';
-        const result = (typeof A === 'number' && typeof B === 'number') ? (A - B) : String(A).localeCompare(String(B),'pt-BR');
-        return sortDir === 'asc' ? result : -result;
+        const r = (typeof A === 'number' && typeof B === 'number') ? A - B : String(A).localeCompare(String(B),'pt-BR');
+        return sortDir === 'asc' ? r : -r;
       });
     }
 
-    function updateTopCards(base) {
+    function updateKPIs(base) {
       $('kpiTotal').textContent = base.length;
-      $('kpiUrgentes').textContent = base.filter(c => ['Urgente','Crítico'].includes(c.status)).length;
-      $('kpiVencidos').textContent = base.filter(c => c.status === 'Vencido').length;
       $('kpiValor').textContent = currency.format(base.reduce((s,c)=>s+(Number(c.valorTotal)||0),0));
-      $('kpi30').textContent = base.filter(c => c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=30).length;
-      $('kpiSemData').textContent = base.filter(c => c.status === 'Sem data').length;
+      $('kpiVencidos').textContent = base.filter(c=>c.status==='Vencido').length;
+      $('kpi30').textContent = base.filter(c=>c.diasRestantes !== null && c.diasRestantes >= 0 && c.diasRestantes <= 30).length;
+      $('kpiSemAtualizacao').textContent = base.filter(c=>['Atualizado > 30 dias','Sem atualização'].includes(c.indicadorAtualizacao)).length;
+      $('kpiPendencias').textContent = base.filter(c=>!c.gestor || !c.fiscal || !c.ultimaAtualizacao).length;
     }
 
-    function renderTabela() {
-      const base = sortItems(filtrados());
-      updateTopCards(base);
-      updateChips();
-      const total = base.length;
-      const pagesCount = Math.max(1, Math.ceil(total / pageSize));
-      if (page > pagesCount) page = pagesCount;
-      const start = (page - 1) * pageSize;
-      const end = Math.min(start + pageSize, total);
-      const visible = base.slice(start, end);
-      $('tbodyContratos').innerHTML = visible.map(c => `
-        <tr>
-          <td>${c.id || ''}</td>
-          <td>${c.numeroContrato || '-'}</td>
-          <td>${c.empresa || '-'}</td>
-          <td>${c.unidade || '-'}</td>
-          <td>${c.dataFimVigencia || '-'}</td>
-          <td><span class="badge ${badgeClass(c.status)}">${c.status}</span></td>
-          <td><span class="semaforo ${c.semaforo}" title="Semáforo contratual"></span></td>
-          <td>${c.diasRestantes === null ? '-' : c.diasRestantes}</td>
-          <td>${c.valorTotal ? currency.format(Number(c.valorTotal)) : '-'}</td>
-          <td>${c.faseAtual || '-'}</td>
-          <td>${c.proximaFase || '-'}</td>
-          <td><button class="ghost" data-edit="${c.id}">Editar</button></td>
-        </tr>
-      `).join('');
-      $('infoPaginacao').textContent = `Exibindo ${total ? start+1 : 0}–${end} de ${total} contratos`;
-      $('pages').innerHTML = Array.from({length: pagesCount}, (_,i)=>`<button class="page-btn ${page===i+1?'active':''}" data-page="${i+1}">${i+1}</button>`).join('');
-      [...document.querySelectorAll('[data-page]')].forEach(btn=>btn.addEventListener('click',()=>{ page = Number(btn.dataset.page); renderTabela(); }));
-      [...document.querySelectorAll('[data-edit]')].forEach(btn=>btn.addEventListener('click',()=>abrirDrawer(btn.dataset.edit)));
-      $('emptyState').classList.toggle('hidden', total > 0);
-      renderCardsAcao(base);
+    function renderPendencias(base) {
+      const semGestor = base.filter(c=>!c.gestor).length;
+      const semFiscal = base.filter(c=>!c.fiscal).length;
+      const vencidos = base.filter(c=>c.status==='Vencido').length;
+      const prox30 = base.filter(c=>c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=30).length;
+      const semAtual = base.filter(c=>['Atualizado > 30 dias','Sem atualização'].includes(c.indicadorAtualizacao)).length;
+      $('dashboardPendencias').innerHTML = `
+        <ul class="list-clean">
+          <li><strong>Contratos sem gestor:</strong> ${semGestor}</li>
+          <li><strong>Contratos sem fiscal:</strong> ${semFiscal}</li>
+          <li><strong>Contratos vencidos:</strong> ${vencidos}</li>
+          <li><strong>Contratos vencendo em 30 dias:</strong> ${prox30}</li>
+          <li><strong>Contratos sem atualização recente:</strong> ${semAtual}</li>
+        </ul>
+      `;
     }
 
-    function renderCardsAcao(base) {
-      const acoes = base.filter(c => c.status === 'Vencido' || c.status === 'Crítico' || (c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=7)).slice(0,8);
-      $('cardsAcao').innerHTML = acoes.length ? acoes.map(c => `<div class="alert-box ${c.status === 'Vencido' || c.status === 'Crítico' ? '' : 'warning'}"><strong>${c.numeroContrato || c.id}</strong> — ${c.empresa || 'Sem empresa'}<br><span class="small">${c.status} | Unidade: ${c.unidade || '-'} | Dias: ${c.diasRestantes ?? '-'} | Próxima fase: ${c.proximaFase || '-'}</span></div>`).join('') : '<div class="alert-box success">Nenhum contrato exige providência imediata nesta semana.</div>';
+    function renderRelatorio(base) {
+      const porStatus = {};
+      base.forEach(c => porStatus[c.status] = (porStatus[c.status] || 0) + 1);
+      const porUnidade = {};
+      base.forEach(c => { const u = c.unidade || 'Não informada'; porUnidade[u] = (porUnidade[u] || 0) + 1; });
+      const providencia = base.filter(c => c.status === 'Vencido' || c.status === 'Crítico' || c.providenciaNecessaria).slice(0,8);
+      $('relatorioExecutivo').innerHTML = `
+        <p><strong>Contratos por unidade:</strong> ${Object.keys(porUnidade).length} unidades mapeadas</p>
+        <p><strong>Contratos por status:</strong> ${Object.entries(porStatus).map(([k,v]) => `${k}: ${v}`).join(' | ')}</p>
+        <p><strong>Exigem providência imediata:</strong></p>
+        ${providencia.length ? '<ul class="list-clean">' + providencia.map(c=>`<li>${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'} (${c.providenciaNecessaria || c.status})</li>`).join('') + '</ul>' : '<div class="small">Nenhum contrato crítico identificado.</div>'}
+      `;
     }
 
-    function renderDashboard() {
-      const base = [...contratos];
-      const count = { Vigente:0, Atenção:0, Urgente:0, Crítico:0, Vencido:0, 'Sem data':0 };
-      base.forEach(c => count[c.status] = (count[c.status] || 0) + 1);
+    function renderCharts(base) {
+      const statusMap = { Vigente:0, Atenção:0, Urgente:0, Crítico:0, Vencido:0, 'Sem data':0 };
+      base.forEach(c => statusMap[c.status] = (statusMap[c.status] || 0) + 1);
       if (chartStatus) chartStatus.destroy();
       chartStatus = new Chart($('chartStatus'), {
         type:'doughnut',
-        data:{ labels:Object.keys(count), datasets:[{ data:Object.values(count), backgroundColor:['#16a34a','#facc15','#fb923c','#ef4444','#111827','#93c5fd'] }] },
+        data:{ labels:Object.keys(statusMap), datasets:[{ data:Object.values(statusMap), backgroundColor:['#16a34a','#facc15','#fb923c','#ef4444','#111827','#93c5fd'] }] },
         options:{ plugins:{ legend:{ position:'bottom' } } }
       });
       const unidadeMap = {};
@@ -516,116 +524,105 @@
       chartUnidade = new Chart($('chartUnidade'), {
         type:'bar',
         data:{ labels:unidades.map(i=>i[0]), datasets:[{ label:'Contratos', data:unidades.map(i=>i[1]), backgroundColor:'#2563eb', borderRadius:10 }] },
-        options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+        options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
       });
       const faixas = { '30 dias':0, '60 dias':0, '90 dias':0 };
-      base.forEach(c => { const d = c.diasRestantes; if (d===null || d<0) return; if (d<=30) faixas['30 dias']++; if (d<=60) faixas['60 dias']++; if (d<=90) faixas['90 dias']++; });
+      base.forEach(c => {
+        const d = c.diasRestantes;
+        if (d === null || d < 0) return;
+        if (d <= 30) faixas['30 dias']++;
+        if (d <= 60) faixas['60 dias']++;
+        if (d <= 90) faixas['90 dias']++;
+      });
       if (chartFaixas) chartFaixas.destroy();
       chartFaixas = new Chart($('chartFaixas'), {
         type:'bar',
         data:{ labels:Object.keys(faixas), datasets:[{ label:'Contratos', data:Object.values(faixas), backgroundColor:['#ef4444','#fb923c','#facc15'], borderRadius:10 }] },
         options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
       });
-
-      const valorTotal = base.reduce((s,c)=>s+(Number(c.valorTotal)||0),0);
-      $('resumoExecutivo').innerHTML = `
-        <p><strong>Total de contratos:</strong> ${base.length}</p>
-        <p><strong>Valor total administrado:</strong> ${currency.format(valorTotal)}</p>
-        <p><strong>Vencidos:</strong> ${count['Vencido']}</p>
-        <p><strong>Vencendo em 30 dias:</strong> ${faixas['30 dias']}</p>
-        <p><strong>Vencendo em 60 dias:</strong> ${faixas['60 dias']}</p>
-        <p><strong>Vencendo em 90 dias:</strong> ${faixas['90 dias']}</p>
-        <p class="small">Objetivo analítico: transformar a base em instrumento de decisão e conferência contratual da Superintendência de Gestão Integrada.</p>
-      `;
-      const timeline = base.filter(c => c.faseAtual || c.proximaFase).slice(0,12);
-      $('timelineContratual').innerHTML = timeline.length ? timeline.map(c => `
-        <div class="timeline-item">
-          <div><strong>${c.numeroContrato || c.id}</strong> — ${c.empresa || 'Sem empresa'}</div>
-          <div class="small"><strong>Fase atual:</strong> ${c.faseAtual || '-'} | <strong>Próxima fase:</strong> ${c.proximaFase || '-'}</div>
-        </div>
-      `).join('') : '<div class="empty">Nenhuma timeline contratual identificada na base.</div>';
     }
 
-    function renderAlertas() {
-      const vencidos = contratos.filter(c => c.status === 'Vencido').sort((a,b)=>(a.diasRestantes??999999)-(b.diasRestantes??999999));
-      const proximos = contratos.filter(c => c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=90).sort((a,b)=>a.diasRestantes-b.diasRestantes);
-      const pendencias = contratos.filter(c => !c.dataFimVigencia || !c.empresa || !c.numeroContrato);
+    function renderRanking(base) {
+      const map = {};
+      base.forEach(c => {
+        const u = c.unidade || 'Não informada';
+        map[u] = map[u] || { unidade:u, qtd:0, valor:0, proximo:null, criticos:0 };
+        if (c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=90) map[u].qtd += 1;
+        map[u].valor += Number(c.valorTotal) || 0;
+        if (['Crítico','Vencido'].includes(c.status)) map[u].criticos += 1;
+        if (c.dataFimVigencia && (!map[u].proximo || c.dataFimVigencia < map[u].proximo)) map[u].proximo = c.dataFimVigencia;
+      });
+      const ranking = Object.values(map).sort((a,b)=>b.qtd-a.qtd).slice(0,10);
+      $('rankingUnidades').innerHTML = ranking.length ? ranking.map((item, idx)=>`<div class="unit-card"><strong>#${idx+1} ${item.unidade}</strong><br><span class="small">Próximos do vencimento: ${item.qtd}</span><br><span class="small">Valor total: ${currency.format(item.valor)}</span><br><span class="small">Próximo vencimento: ${item.proximo || 'Sem data'}</span><br><span class="small">Críticos: ${item.criticos}</span></div>`).join('') : '<div class="empty">Sem ranking disponível.</div>';
+    }
+
+    function renderNotificacoes(base) {
+      const vencidos = base.filter(c=>c.status==='Vencido').slice(0,6);
+      const proximos = base.filter(c=>c.diasRestantes !== null && c.diasRestantes >=0 && c.diasRestantes <=30).slice(0,6);
+      const semAtual = base.filter(c=>['Atualizado > 30 dias','Sem atualização'].includes(c.indicadorAtualizacao)).slice(0,6);
       $('centralNotificacoes').innerHTML = `
-        ${vencidos.length ? vencidos.slice(0,8).map(c => `<div class="alert-box dark"><strong>Vencido:</strong> ${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'}<br><span class="small">Unidade: ${c.unidade || '-'} | Venceu há ${Math.abs(c.diasRestantes)} dias</span></div>`).join('') : '<div class="alert-box success">Nenhum contrato vencido no momento.</div>'}
-        ${proximos.length ? proximos.slice(0,8).map(c => `<div class="alert-box warning"><strong>Próximo do vencimento:</strong> ${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'}<br><span class="small">Vence em ${c.diasRestantes} dias (${c.dataFimVigencia || '-'})</span></div>`).join('') : ''}
-      `;
-      $('monitorConferencia').innerHTML = `
-        <div class="alert-box warning"><strong>Pendências cadastrais:</strong> ${pendencias.length}</div>
-        <div class="alert-box"><strong>Contratos críticos:</strong> ${contratos.filter(c => c.status === 'Crítico').length}</div>
-        <div class="alert-box warning"><strong>Contratos em atenção:</strong> ${contratos.filter(c => c.status === 'Atenção').length}</div>
-        <div class="small">Pendências críticas incluem ausência de número do contrato, empresa ou data final de vigência.</div>
+        ${vencidos.length ? vencidos.map(c=>`<div class="alert-box dark"><strong>Vencido:</strong> ${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'}<br><span class="small">Providência: ${c.providenciaNecessaria || 'Verificar imediatamente'}</span></div>`).join('') : '<div class="alert-box success">Nenhum contrato vencido.</div>'}
+        ${proximos.length ? proximos.map(c=>`<div class="alert-box warning"><strong>Vence em até 30 dias:</strong> ${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'}<br><span class="small">Dias: ${c.diasRestantes} | Situação: ${c.situacaoProcesso || '-'}</span></div>`).join('') : ''}
+        ${semAtual.length ? semAtual.map(c=>`<div class="alert-box warning"><strong>Sem atualização recente:</strong> ${c.numeroContrato || c.id} — ${c.empresa || 'Sem empresa'}<br><span class="small">Última atualização: ${c.ultimaAtualizacao || 'não informada'}</span></div>`).join('') : ''}
       `;
       if ('Notification' in window && Notification.permission === 'granted') {
-        const criticos = contratos.filter(c => ['Crítico','Vencido'].includes(c.status)).slice(0,3);
-        criticos.forEach(c => new Notification(`Contrato ${c.status}`, { body: `${c.numeroContrato || c.id} • ${c.empresa || 'Sem empresa'} • ${c.dataFimVigencia || 'Sem data'}` }));
+        base.filter(c=>['Crítico','Vencido'].includes(c.status)).slice(0,2).forEach(c=>new Notification(`Contrato ${c.status}`, { body:`${c.numeroContrato || c.id} • ${c.empresa || 'Sem empresa'} • ${c.providenciaNecessaria || c.status}` }));
       }
     }
 
-    function renderCalendario() {
-      const validos = contratos.filter(c => c.dataFimVigencia).sort((a,b)=>a.dataFimVigencia.localeCompare(b.dataFimVigencia));
-      const grupos = {};
-      validos.forEach(c => {
-        const dt = new Date(c.dataFimVigencia + 'T00:00:00');
-        const key = dt.toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
-        grupos[key] = grupos[key] || [];
-        grupos[key].push(c);
-      });
-      const keys = Object.keys(grupos).slice(0,6);
-      $('calendarGrid').innerHTML = keys.length ? keys.map(k => `
-        <div class="month-col">
-          <h4>${k}</h4>
-          ${grupos[k].slice(0,10).map(c => `<div class="month-item"><strong>${c.numeroContrato || c.id}</strong><br><span class="small">${c.empresa || 'Sem empresa'} | ${c.dataFimVigencia} | ${c.status}</span></div>`).join('')}
-        </div>
-      `).join('') : '<div class="empty">Nenhum vencimento com data cadastrada para exibir no calendário.</div>';
+    function renderTabela(base) {
+      const total = base.length;
+      const pagesCount = Math.max(1, Math.ceil(total / pageSize));
+      if (page > pagesCount) page = pagesCount;
+      const start = (page - 1) * pageSize; const end = Math.min(start + pageSize, total);
+      const view = base.slice(start, end);
+      $('tbodyContratos').innerHTML = view.map(c => `
+        <tr>
+          <td>${c.id || ''}</td>
+          <td>${c.numeroContrato || '-'}</td>
+          <td>${c.processoSei || '-'}</td>
+          <td>${c.empresa || '-'}</td>
+          <td>${c.unidade || '-'}</td>
+          <td>${c.dataFimVigencia || '-'}</td>
+          <td><span class="badge ${badgeClass(c.status)}">${c.status}</span></td>
+          <td><span class="semaforo ${c.semaforo}" title="Semáforo contratual"></span></td>
+          <td>${c.diasRestantes === null ? '-' : c.diasRestantes}</td>
+          <td><span class="badge ${c.indicadorAtualizacaoClasse}">${c.indicadorAtualizacao}</span><br><span class="small">${c.ultimaAtualizacao || '-'}</span></td>
+          <td>${c.responsavelAtualizacao || '-'}</td>
+          <td>${c.providenciaNecessaria || '-'}</td>
+          <td>${c.situacaoProcesso || '-'}</td>
+          <td><strong>Atual:</strong> ${c.faseAtual || '-'}<br><strong>Próxima:</strong> ${c.proximaFase || '-'}</td>
+          <td><button class="ghost" data-edit="${c.id}">Editar</button></td>
+        </tr>
+      `).join('');
+      $('infoPaginacao').textContent = `Exibindo ${total ? start+1 : 0}–${end} de ${total} contratos`;
+      $('pages').innerHTML = Array.from({length: pagesCount}, (_,i)=>`<button class="page-btn ${page===i+1?'active':''}" data-page="${i+1}">${i+1}</button>`).join('');
+      [...document.querySelectorAll('[data-page]')].forEach(btn=>btn.addEventListener('click',()=>{ page = Number(btn.dataset.page); renderAll(); }));
+      [...document.querySelectorAll('[data-edit]')].forEach(btn=>btn.addEventListener('click',()=>abrirDrawer(btn.dataset.edit)));
     }
 
-    function renderUnidades() {
-      const map = {};
-      contratos.forEach(c => {
-        const u = c.unidade || 'Não informada';
-        map[u] = map[u] || { unidade:u, qtd:0, valor:0, proximo:null, criticos:0 };
-        map[u].qtd += 1;
-        map[u].valor += Number(c.valorTotal) || 0;
-        if (c.status === 'Crítico' || c.status === 'Vencido') map[u].criticos += 1;
-        if (c.dataFimVigencia) {
-          if (!map[u].proximo || c.dataFimVigencia < map[u].proximo.dataFimVigencia) map[u].proximo = c;
-        }
-      });
-      const lista = Object.values(map).sort((a,b)=>b.qtd-a.qtd);
-      $('unitGrid').innerHTML = lista.length ? lista.map(item => `
-        <div class="panel fade-in">
-          <h3>${item.unidade}</h3>
-          <p><strong>Quantidade de contratos:</strong> ${item.qtd}</p>
-          <p><strong>Valor total:</strong> ${currency.format(item.valor)}</p>
-          <p><strong>Próximo vencimento:</strong> ${item.proximo ? item.proximo.dataFimVigencia + ' (' + (item.proximo.numeroContrato || item.proximo.id) + ')' : 'Sem data'}</p>
-          <p><strong>Contratos críticos:</strong> ${item.criticos}</p>
-        </div>
-      `).join('') : '<div class="empty">Nenhuma unidade encontrada.</div>';
-    }
-
-    function renderAll() {
-      preencherUnidades();
-      carregarFiltros();
-      renderTabela();
-      renderDashboard();
-      renderAlertas();
-      renderCalendario();
-      renderUnidades();
+    function exportarBackup() {
+      const blob = new Blob([JSON.stringify(contratos.map(({docId,...rest})=>rest), null, 2)], { type:'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `backup-contratos-${hojeISO()}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
     }
 
     function abrirDrawer(id = null) {
       contratoEmEdicao = id;
-      const form = $('formContrato');
-      form.reset();
-      const item = id ? contratos.find(c => c.id === id) : { id:`CTR-${String(contratos.length+1).padStart(4,'0')}`, origemAba:'Cadastro manual' };
+      const form = $('formContrato'); form.reset();
+      const item = id ? contratos.find(c=>c.id===id) : {
+        id:`CTR-${String(contratos.length+1).padStart(4,'0')}`,
+        origemAba:'Cadastro manual',
+        ultimaAtualizacao: hojeISO(),
+        responsavelAtualizacao: '',
+        providenciaNecessaria: '',
+        situacaoProcesso: '',
+      };
       $('drawerTitle').textContent = id ? 'Editar contrato' : 'Novo contrato';
-      $('btnExcluir').classList.toggle('hidden', !id);
-      Object.entries(item).forEach(([k,v]) => { if (form.elements[k]) form.elements[k].value = v ?? ''; });
+      Object.entries(item).forEach(([k,v])=>{ if (form.elements[k]) form.elements[k].value = v ?? ''; });
       $('drawerBackdrop').classList.add('open');
       $('drawerBackdrop').setAttribute('aria-hidden','false');
     }
@@ -640,25 +637,22 @@
       const fd = new FormData(form);
       const data = Object.fromEntries(fd.entries());
       data.valorTotal = data.valorTotal ? Number(data.valorTotal) : null;
+      data.ultimaAtualizacao = data.ultimaAtualizacao || hojeISO();
       if (contratoEmEdicao) {
-        const atual = contratos.find(c => c.id === contratoEmEdicao);
+        const atual = contratos.find(c=>c.id===contratoEmEdicao);
         await updateDoc(doc(db, 'contratos', atual.docId), data);
       } else {
         await addDoc(collection(db, 'contratos'), data);
       }
-      await carregarBase();
-      renderAll();
-      fecharDrawer();
+      await carregarBase(); renderAll(); fecharDrawer();
     }
 
     async function excluirContrato() {
       if (!contratoEmEdicao) return;
       if (!confirm('Deseja excluir este contrato?')) return;
-      const atual = contratos.find(c => c.id === contratoEmEdicao);
+      const atual = contratos.find(c=>c.id===contratoEmEdicao);
       await deleteDoc(doc(db, 'contratos', atual.docId));
-      await carregarBase();
-      renderAll();
-      fecharDrawer();
+      await carregarBase(); renderAll(); fecharDrawer();
     }
 
     async function excluirTodosContratos() {
@@ -667,93 +661,94 @@
       const docs = snap.docs;
       for (let i = 0; i < docs.length; i += 400) {
         const batch = writeBatch(db);
-        docs.slice(i, i+400).forEach(d => batch.delete(doc(db,'contratos', d.id)));
+        docs.slice(i, i+400).forEach(d=>batch.delete(doc(db,'contratos',d.id)));
         await batch.commit();
       }
     }
 
-    function parseWorkbookToContracts(workbook) {
+    function parseWorkbookToContracts(workbook, existentes) {
       const registros = [];
       let seq = 1;
       for (const sheetName of workbook.SheetNames) {
         const ws = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
         if (!rows.length) continue;
-        const normalizedRows = rows.map(row => {
-          const out = {}; Object.keys(row).forEach(k => out[norm(k)] = row[k]); return out;
-        });
+        const normalizedRows = rows.map(row => { const out={}; Object.keys(row).forEach(k=>out[norm(k)] = row[k]); return out; });
         const cols = Object.keys(normalizedRows[0] || {});
         let procCol = findCol(cols, ['processo_sei','n_processo_sei']);
-        let contCol = findCol(cols, ['n_do_contrato','n_de_contrato','numero_contrato','n_contrato']);
+        let contCol = findCol(cols, ['n_do_contrato','n_de_contrato','numero_contrato','n_contrato','n_contratacao']);
         let empresaCol = findCol(cols, ['empresa']);
         let objetoCol = findCol(cols, ['objeto']);
         let unidadeCol = findCol(cols, ['unidade']);
         let modalidadeCol = findCol(cols, ['modalidade']);
-        let gestorCol = findCol(cols, ['gestor']);
-        let fiscalCol = findCol(cols, ['fiscal']);
+        let gestorCol = findCol(cols, ['gestor','em_analise']);
+        let fiscalCol = findCol(cols, ['fiscal','apoio']);
         let faseCol = findCol(cols, ['fase_atual']);
-        let proximaCol = findCol(cols, ['proxima_fase']);
+        let proxCol = findCol(cols, ['proxima_fase']);
         let valorCol = findCol(cols, ['valor_total']);
         let obsCol = findCol(cols, ['observacao','atualizacao','situacao']);
         let prazoCol = findCol(cols, ['data_fim_vigencia','prazo','vigencia']);
-        if (norm(sheetName).includes('sislog')) {
-          contCol = findCol(cols, ['n_contratacao']);
-          gestorCol = findCol(cols, ['em_analise']);
-          fiscalCol = findCol(cols, ['apoio']);
-          obsCol = findCol(cols, ['atualizacao']);
-          prazoCol = findCol(cols, ['prazo']);
-        }
+
         for (const row of normalizedRows) {
+          const processoSei = procCol ? cleanText(row[procCol]) : '';
+          const numeroContrato = contCol ? cleanText(row[contCol]) : '';
+          const empresa = empresaCol ? cleanText(row[empresaCol]) : '';
+          const objeto = objetoCol ? cleanText(row[objetoCol]) : '';
+          if ([processoSei, numeroContrato, empresa, objeto].filter(Boolean).length < 2) continue;
+          const match = existentes.find(c => (numeroContrato && c.numeroContrato === numeroContrato) || (processoSei && c.processoSei === processoSei));
           const rec = {
-            id: `CTR-${String(seq).padStart(4,'0')}`,
+            id: match?.id || `CTR-${String(seq).padStart(4,'0')}`,
             origemAba: sheetName,
-            processoSei: procCol ? cleanText(row[procCol]) : '',
-            numeroContrato: contCol ? cleanText(row[contCol]) : '',
-            empresa: empresaCol ? cleanText(row[empresaCol]) : '',
-            objeto: objetoCol ? cleanText(row[objetoCol]) : '',
+            processoSei,
+            numeroContrato,
+            empresa,
+            objeto,
             unidade: unidadeCol ? cleanText(row[unidadeCol]) : '',
             modalidade: modalidadeCol ? cleanText(row[modalidadeCol]) : '',
-            gestor: gestorCol ? cleanText(row[gestorCol]) : '',
-            fiscal: fiscalCol ? cleanText(row[fiscalCol]) : '',
-            valorTotal: valorCol ? parseCurrency(row[valorCol]) : null,
+            gestor: gestorCol ? cleanText(row[gestorCol]) : match?.gestor || '',
+            fiscal: fiscalCol ? cleanText(row[fiscalCol]) : match?.fiscal || '',
+            valorTotal: valorCol ? parseCurrency(row[valorCol]) : match?.valorTotal || null,
             dataFimVigencia: null,
-            faseAtual: faseCol ? cleanText(row[faseCol]) : '',
-            proximaFase: proximaCol ? cleanText(row[proximaCol]) : '',
-            observacoes: obsCol ? cleanText(row[obsCol]) : ''
+            faseAtual: faseCol ? cleanText(row[faseCol]) : match?.faseAtual || '',
+            proximaFase: proxCol ? cleanText(row[proxCol]) : match?.proximaFase || '',
+            observacoes: obsCol ? cleanText(row[obsCol]) : match?.observacoes || '',
+            ultimaAtualizacao: hojeISO(),
+            responsavelAtualizacao: match?.responsavelAtualizacao || 'Importação via Excel',
+            providenciaNecessaria: match?.providenciaNecessaria || '',
+            situacaoProcesso: match?.situacaoProcesso || '',
+            docId: match?.docId || undefined,
           };
           const rawPrazo = prazoCol ? row[prazoCol] : null;
-          rec.dataFimVigencia = excelSerialToISO(rawPrazo) || extractDateFromText(rawPrazo) || extractDateFromText(rec.faseAtual) || extractDateFromText(rec.proximaFase) || extractDateFromText(rec.observacoes);
-          const nonempty = [rec.processoSei, rec.numeroContrato, rec.empresa, rec.objeto].filter(Boolean).length;
-          if (nonempty < 2) continue;
-          registros.push(enriquecido(rec));
+          rec.dataFimVigencia = excelSerialToISO(rawPrazo) || extractDateFromText(rawPrazo) || extractDateFromText(rec.faseAtual) || extractDateFromText(rec.proximaFase) || extractDateFromText(rec.observacoes) || match?.dataFimVigencia || '';
+          registros.push(enrich(rec));
           seq += 1;
         }
       }
       const seen = new Set();
       return registros.filter(r => {
-        const key = [r.origemAba, r.processoSei, r.numeroContrato, r.empresa, r.objeto].join('||');
-        if (seen.has(key)) return false;
-        seen.add(key); return true;
+        const key = (r.numeroContrato || '') + '||' + (r.processoSei || '');
+        if (seen.has(key)) return false; seen.add(key); return true;
       });
     }
 
     async function importarExcel(file) {
-      const substituir = confirm('Deseja SUBSTITUIR a base atual pelos dados do Excel? OK = substitui tudo | Cancelar = apenas adiciona');
       document.body.classList.add('loading');
       try {
         const buffer = await file.arrayBuffer();
         const workbook = XLSX.read(buffer, { type:'array' });
-        const dados = parseWorkbookToContracts(workbook);
-        if (!dados.length) { alert('Nenhum contrato válido foi encontrado no Excel.'); return; }
-        if (substituir) await excluirTodosContratos();
-        for (let i = 0; i < dados.length; i += 400) {
+        const processados = parseWorkbookToContracts(workbook, contratos);
+        if (!processados.length) { alert('Nenhum contrato válido foi encontrado no Excel.'); return; }
+        for (let i = 0; i < processados.length; i += 300) {
           const batch = writeBatch(db);
-          dados.slice(i, i + 400).forEach(item => { const ref = doc(collection(db, 'contratos')); batch.set(ref, item); });
+          processados.slice(i, i+300).forEach(item => {
+            const payload = { ...item }; delete payload.docId; delete payload.status; delete payload.diasRestantes; delete payload.semaforo; delete payload.indicadorAtualizacao; delete payload.indicadorAtualizacaoClasse;
+            if (item.docId) batch.set(doc(db,'contratos', item.docId), payload, { merge:true });
+            else batch.set(doc(collection(db,'contratos')), payload);
+          });
           await batch.commit();
         }
-        alert(`Importação concluída com sucesso. ${dados.length} registros processados.`);
-        await carregarBase();
-        renderAll();
+        alert(`Importação inteligente concluída. ${processados.length} registros processados, atualizando contratos existentes por número do contrato ou processo SEI.`);
+        await carregarBase(); renderAll();
       } catch (e) {
         console.error(e);
         alert('Não foi possível importar o Excel.');
@@ -762,35 +757,39 @@
       }
     }
 
+    function renderAll() {
+      preencherUnidades();
+      carregarFiltros();
+      const base = sorted(filtrar());
+      updateKPIs(base);
+      updateChips();
+      renderPendencias(base);
+      renderRelatorio(base);
+      renderCharts(base);
+      renderRanking(base);
+      renderNotificacoes(base);
+      renderTabela(base);
+    }
+
     $('btnNovo').addEventListener('click', ()=>abrirDrawer());
     $('btnCloseDrawer').addEventListener('click', fecharDrawer);
     $('btnCancelarDrawer').addEventListener('click', fecharDrawer);
     $('btnSalvarDrawer').addEventListener('click', salvarContrato);
     $('btnExcluir').addEventListener('click', excluirContrato);
     $('btnAtualizar').addEventListener('click', async ()=>{ await carregarBase(); renderAll(); });
-    $('btnLimpar').addEventListener('click', ()=>{ state.busca.value=''; state.unidade.value=''; state.status.value=''; page=1; renderAll(); });
+    $('btnExportarBackup').addEventListener('click', exportarBackup);
     $('btnSalvarFiltros').addEventListener('click', salvarFiltros);
-    $('fBusca').addEventListener('input', ()=>{ page=1; renderTabela(); updateChips(); });
-    $('fUnidade').addEventListener('change', ()=>{ page=1; renderTabela(); updateChips(); });
-    $('fStatus').addEventListener('change', ()=>{ page=1; renderTabela(); updateChips(); });
+    $('btnLimpar').addEventListener('click', ()=>{ $('fBusca').value=''; $('fUnidade').value=''; $('fStatus').value=''; $('fAtualizacao').value=''; page=1; renderAll(); });
+    $('btnSemanas').addEventListener('click', ()=>{ $('fStatus').value='Crítico'; page=1; renderAll(); });
+    $('fBusca').addEventListener('input', ()=>{ page=1; renderAll(); });
+    $('fUnidade').addEventListener('change', ()=>{ page=1; renderAll(); });
+    $('fStatus').addEventListener('change', ()=>{ page=1; renderAll(); });
+    $('fAtualizacao').addEventListener('change', ()=>{ page=1; renderAll(); });
     $('inputExcel').addEventListener('change', async (e)=>{ if (e.target.files[0]) await importarExcel(e.target.files[0]); e.target.value=''; });
     document.querySelector('.btn-file').addEventListener('click', ()=> $('inputExcel').click());
-    document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', ()=>{
-      document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-      btn.classList.add('active');
-      $('tab-' + btn.dataset.tab).classList.add('active');
-    }));
-    document.querySelectorAll('th[data-sort]').forEach(th => th.addEventListener('click', ()=>{
-      const key = th.dataset.sort;
-      if (sortBy === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-      else { sortBy = key; sortDir = 'asc'; }
-      renderTabela();
-    }));
+    document.querySelectorAll('th[data-sort]').forEach(th => th.addEventListener('click', ()=>{ const key = th.dataset.sort; if (sortBy === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc'; else { sortBy = key; sortDir = 'asc'; } renderAll(); }));
 
-    if ('Notification' in window && Notification.permission === 'default') {
-      try { Notification.requestPermission(); } catch(e) {}
-    }
+    if ('Notification' in window && Notification.permission === 'default') { try { Notification.requestPermission(); } catch (e) {} }
 
     await carregarBase();
     renderAll();
